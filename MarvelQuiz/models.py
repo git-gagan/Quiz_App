@@ -13,6 +13,3 @@ class User(models.Model):
     ph_num = PhoneNumberField("Phone Number", unique = True)
     password = models.CharField("Password", max_length=20)
     
-    
-    
-    
