@@ -26,7 +26,13 @@ SECRET_KEY = 'django-insecure-nx)f*s+r@h$y#t!*my27rhtn32j6-mbqom!du$9t7mhz@+w!ed
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+#DataFlair
+EMAIL_BACKEND ="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'er.gaganraj@gmail.com'
+EMAIL_HOST_PASSWORD = 'SoftwareEngineer'
 
 # Application definition
 

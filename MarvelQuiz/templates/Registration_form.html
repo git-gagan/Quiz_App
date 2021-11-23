@@ -1,3 +1,6 @@
+{% if error %}
+<p>{{ error }}</p>
+{% endif %}
 <div class = "container">
     <form method="POST">
         <fieldset>
@@ -5,6 +8,8 @@
             {% csrf_token %}
             {{ form.as_table }}
             <button type="submit" class="btn btn-primary">Register</button>
+            <br/>
+            Already a User? <a href="\Login">Log In here</a>
         </fieldset>
     </form>
 </div>

@@ -9,7 +9,8 @@ class User(models.Model):
     This is the User model which consists of User Specific Data 
     primarily intended to be user for Registration and Login purposes
     """
-    user_name = models.CharField("User Name", max_length=30, unique=True)
+    user_name = models.CharField("User Name", max_length=30, unique = True)
     ph_num = PhoneNumberField("Phone Number", unique = True)
     password = models.CharField("Password", max_length=20)
+    email = models.EmailField("Email ID", unique = True)
     
