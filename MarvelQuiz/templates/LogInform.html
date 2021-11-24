@@ -1,2 +1,12 @@
 <h3>Welcome to Login Page.</h3>
 <h4>Enter your credentials below</h4>
+<form method="POST">
+    <fieldset>
+        <legend>Log In</legend>
+        {% csrf_token %}
+        {{ form.as_table }}
+        <button type="submit" class="btn btn-primary">Register</button>
+        <br/>
+        New User? <a href="\">Register here</a>
+    </fieldset>
+</form>

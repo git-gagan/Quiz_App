@@ -2,7 +2,7 @@ from django import http
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.http import HttpResponse, request
-from .forms import MyUserForm
+from .forms import MyUserForm, LoggingForm
 import pyotp
 from .models import User
 from django.core.mail import send_mail
@@ -68,6 +68,19 @@ def OTP(request):
     return render(request, "Verification.html")
     
 def LogIn(request):
-    return render(request, "LogInform.html") 
+    """
+    This view deals with the login functionality verifying the credentials of the user.
+    """
+    if request.method == "POST":
+        form = LoggingForm(request.POST)
+        this_user = request.POST.get("user_name")
+        this_user_pass = request.POST.get("password")
+        if User.objects.all().filter(user_name=this_user, password=this_user_pass):
+            return HttpResponse("Logged In successfully!")
+        else:
+            return HttpResponse("Invalid Credentials")
+    else:
+        form = LoggingForm()
+    return render(request, "LogInform.html", {"form":form}) 
     
 
