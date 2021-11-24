@@ -1,0 +1,32 @@
+body{
+    background-color: dodgerblue;
+    font-family: "Comic Sans";
+    font-size: 1.5rem;
+}
+
+button{
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding:0.3rem;
+    display:block;
+    margin-top: 0.5rem;
+    width: 100%;
+    background-color:grey
+}
+
+button:hover{
+    background-color:antiquewhite;
+    color: dodgerblue;
+}
+
+input{
+    display:block;
+    width: 50%;
+    margin-bottom: 0.5rem;
+    padding:0.5rem
+}
+
+fieldset{
+    border: 2px groove black
+}
+
