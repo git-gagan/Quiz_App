@@ -1,5 +1,5 @@
 from django import http
-from django.http.response import HttpResponseRedirect
+from django.http.response import Http404, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render
 from django.http import HttpResponse, request
 from .forms import MyUserForm, LoggingForm
@@ -22,7 +22,7 @@ def SignUp(request):
             global Email 
             Email = request.POST.get('email')
             base32secret = pyotp.random_base32()
-            totp = pyotp.TOTP(base32secret, digits=4,interval=300)
+            totp = pyotp.TOTP(base32secret, digits=4, interval=120)
             #print("TOTP-------------------------------",totp.now())
             global real_otp
             real_otp = totp.now()
@@ -33,7 +33,7 @@ def SignUp(request):
                         To: To {receiver}
                         Hey Buddy, 
                         Thanks for signing up. Your OTP is {real_otp}.
-                        It is valid for 5 minutes. Be quick!
+                        It is valid for 2 minutes. Be quick!
                     """
             try:
                 send_mail(
@@ -56,16 +56,25 @@ def OTP(request):
     """
     This view deals with OTP verification display
     """
-    if request.method == 'POST':
-        user_input = request.POST.get("otp")
-        if user_input != real_otp:
-            User.objects.filter(email=Email).delete()
-            error = "Verification Failed! Try again."
-            return HttpResponse(error)
-        else:
-            msg = "Congrats!!! You are a verfied User! <a href='/Login'>Login Now</a>"
-            return HttpResponse(msg)
-    return render(request, "Verification.html")
+    try:
+        verified_obj = User.objects.get(email=Email)
+    except:
+        return HttpResponseNotFound("<h3>Page Not found!!</h3>")
+    if not verified_obj.is_verified:
+        if request.method == 'POST':
+            user_input = request.POST.get("otp")
+            if user_input != real_otp:
+                User.objects.filter(email=Email).delete()
+                error = "Verification Failed! Try again."
+                return HttpResponse(error)
+            else:
+                msg = "Congrats!!! You are a verfied User! <a href='/Login'>Login Now</a>"
+                verified_obj.is_verified = True
+                verified_obj.save()
+                return HttpResponse(msg)
+        return render(request, "Verification.html")
+    else:
+        return HttpResponseRedirect("/Login")
     
 def LogIn(request):
     """
