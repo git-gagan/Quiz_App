@@ -84,5 +84,9 @@ def LogIn(request):
     return render(request, "LogInform.html", {"form":form}) 
     
 def Home(request):
+    """
+    Home view here deals with the display and logic behind the HomePage
+    It's showing all the quizzes being created.
+    """
     all_quizzes = QuizModel.objects.all()
     return render(request, "HomePage.html", {"quizzes":all_quizzes})
