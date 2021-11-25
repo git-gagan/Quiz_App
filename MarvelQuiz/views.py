@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, request
 from .forms import MyUserForm, LoggingForm
 import pyotp
-from .models import User
+from .models import QuizModel, User
 from django.core.mail import send_mail
 # Views here
 
@@ -76,11 +76,13 @@ def LogIn(request):
         this_user = request.POST.get("user_name")
         this_user_pass = request.POST.get("password")
         if User.objects.all().filter(user_name=this_user, password=this_user_pass):
-            return HttpResponse("Logged In successfully!")
+            return HttpResponseRedirect("/Home")
         else:
             return HttpResponse("Invalid Credentials")
     else:
         form = LoggingForm()
     return render(request, "LogInform.html", {"form":form}) 
     
-
+def Home(request):
+    all_quizzes = QuizModel.objects.all()
+    return render(request, "HomePage.html", {"quizzes":all_quizzes})
