@@ -22,6 +22,19 @@ class QuizModel(models.Model):
     NOTE:- We will use Auto incremented Django Field ID as primary key, so need not to add.
     """
     Quiz_Name = models.CharField(unique = True, max_length = 20)
+    timer = models.IntegerField("Timer")
+
+class Question(models.Model):
+    """
+    This class has data fields representing each particular question
+    The question can be both MCQ or FIB which is determined by the type field
+    Also, quiz_id is the foreign key which maps to QuizModel.
+    """
+    ques_text = models.CharField("Question", max_length=40)
+    ques_score = models.SmallIntegerField("Marks")
+    ques_type = models.CharField("Type", max_length=3)
+    quiz_id = models.ForeignKey(QuizModel, on_delete=models.CASCADE)
+    
 
     
     
