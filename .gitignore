@@ -1,5 +1,6 @@
-migrations/
-__pycache__/
+**/migrations
+**/__pycache__
 *.txt
 db.sqlite3
 !requirements.txt
+.pyc

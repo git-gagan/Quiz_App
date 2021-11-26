@@ -32,7 +32,16 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'er.gaganraj@gmail.com'
-EMAIL_HOST_PASSWORD = 'SoftwareEngineer'
+"""
+Avoid Hardcoding sensitive information like API tokens or password directly in here
+Instead use a different file not to be committed or environment variables.
+"""
+#EMAIL_HOST_PASSWORD = '******************'
+
+import os
+
+EMAIL_HOST_PASSWORD = os.environ.get("marvel_quiz_password")
+#print(EMAIL_HOST_PASSWORD)
 
 # Application definition
 
