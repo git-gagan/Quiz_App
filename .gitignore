@@ -3,4 +3,3 @@ __pycache__/
 *.txt
 db.sqlite3
 !requirements.txt
-*.pyc
