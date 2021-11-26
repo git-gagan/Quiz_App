@@ -3,4 +3,4 @@
 *.txt
 db.sqlite3
 !requirements.txt
-.pyc
+*.pyc
