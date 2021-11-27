@@ -14,6 +14,8 @@ class User(models.Model):
     password = models.CharField("Password", max_length=20)
     email = models.EmailField("Email ID", unique = True)
     is_verified = models.BooleanField("Authentication Status", default=False)
+    def __str__(self):
+        return self.user_name
     
 class QuizModel(models.Model):
     """
@@ -23,6 +25,8 @@ class QuizModel(models.Model):
     """
     Quiz_Name = models.CharField(unique = True, max_length = 20)
     timer = models.IntegerField("Timer")
+    def __str__(self):
+        return self.Quiz_Name
 
 class Question(models.Model):
     """
@@ -34,6 +38,8 @@ class Question(models.Model):
     ques_score = models.SmallIntegerField("Marks")
     ques_type = models.CharField("Type", max_length=3)
     quiz_id = models.ForeignKey(QuizModel, on_delete=models.CASCADE) 
+    def __str__(self):
+        return self.ques_text
 
 class Answer(models.Model):
     """
@@ -43,5 +49,7 @@ class Answer(models.Model):
     ques_ID = models.ForeignKey(Question, on_delete=models.CASCADE)
     solutions = models.CharField("Solution", max_length=10)
     is_correct = models.BooleanField("Correct", null=True)
+    def __str__(self):
+        return self.ques_ID
     
     
