@@ -1,6 +1,8 @@
 from django.contrib import admin
-from . import models
+from .models import *
 
 # Register your models here.
-admin.site.register(models.User)
-admin.site.register(models.QuizModel)
+my_models = [User, QuizModel, Question, Answer]
+# Looping to make it simpler and short.
+for model in my_models:
+    admin.site.register(model)
