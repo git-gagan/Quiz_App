@@ -3,6 +3,11 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}"/>
 </head>
 <center>
+    <p style="background-color:red; font-weight:bolder">
+        {% if msg %}
+        {{ msg }}
+        {% endif %}
+    </p>
     <h3>Welcome to Login Page.</h3>
     <h4>Enter your credentials below</h4>
 </center>

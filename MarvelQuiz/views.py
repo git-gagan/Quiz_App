@@ -6,6 +6,17 @@ from .forms import MyUserForm, LoggingForm
 import pyotp
 from .models import QuizModel, User
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
+
+# Custom authentication Function (Use abstarct class to avoid all this hustle)
+def my_authenticate(request):
+    try:
+        this_user = request.GET["this_user"]
+        _ = User.objects.get(user_name = this_user)
+    except:
+        return False
+    return True
+
 # Views here
 
 Email = ""
@@ -80,22 +91,29 @@ def LogIn(request):
     """
     This view deals with the login functionality verifying the credentials of the user.
     """
+    try:
+        keyword = request.GET["message"]
+    except:
+        keyword = ""
     if request.method == "POST":
         form = LoggingForm(request.POST)
         this_user = request.POST.get("user_name")
         this_user_pass = request.POST.get("password")
         if User.objects.all().filter(user_name=this_user, password=this_user_pass):
-            return HttpResponseRedirect("/Home")
+            return HttpResponseRedirect(f"/Home/?this_user={this_user}")
         else:
             return HttpResponse("Invalid Credentials")
     else:
         form = LoggingForm()
-    return render(request, "LogInform.html", {"form":form}) 
-    
+    return render(request, "LogInform.html", {"form":form, "msg":keyword}) 
+
 def Home(request):
     """
     Home view here deals with the display and logic behind the HomePage
     It's showing all the quizzes being created.
     """
+    if not my_authenticate(request):
+        msg = "Please Log In first for ACCESS"
+        return HttpResponseRedirect(f"/Login/?message={msg}")
     all_quizzes = QuizModel.objects.all()
     return render(request, "HomePage.html", {"quizzes":all_quizzes})
