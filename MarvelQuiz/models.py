@@ -33,8 +33,15 @@ class Question(models.Model):
     ques_text = models.CharField("Question", max_length=40)
     ques_score = models.SmallIntegerField("Marks")
     ques_type = models.CharField("Type", max_length=3)
-    quiz_id = models.ForeignKey(QuizModel, on_delete=models.CASCADE)
-    
+    quiz_id = models.ForeignKey(QuizModel, on_delete=models.CASCADE) 
 
+class Answer(models.Model):
+    """
+    This model deals with the answers of all the questions
+    It includes all the choices for MCQ with additional parameter to specify the right one
+    """
+    ques_ID = models.ForeignKey(Question, on_delete=models.CASCADE)
+    solutions = models.CharField("Solution", max_length=10)
+    is_correct = models.BooleanField("Correct", null=True)
     
     

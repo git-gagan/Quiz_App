@@ -1,12 +1,10 @@
-from django import http
-from django.http.response import Http404, HttpResponseNotFound, HttpResponseRedirect
+from django.http.response import HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render
 from django.http import HttpResponse, request
 from .forms import MyUserForm, LoggingForm
 import pyotp
 from .models import QuizModel, User
 from django.core.mail import send_mail
-from django.contrib.auth.decorators import login_required
 
 # Custom authentication Function (Use abstarct class to avoid all this hustle)
 def my_authenticate(request):
