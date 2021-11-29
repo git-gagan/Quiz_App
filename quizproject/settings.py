@@ -24,6 +24,10 @@ SECRET_KEY = 'django-insecure-nx)f*s+r@h$y#t!*my27rhtn32j6-mbqom!du$9t7mhz@+w!ed
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+AUTH_USER_MODEL = "my_quizzes.User"
+
+LOGIN_URL = "/Login"
+
 ALLOWED_HOSTS = []
 #DataFlair
 EMAIL_BACKEND ="django.core.mail.backends.smtp.EmailBackend"

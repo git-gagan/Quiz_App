@@ -5,21 +5,13 @@ from .forms import MyUserForm, LoggingForm
 import pyotp
 from .models import QuizModel, User
 from django.core.mail import send_mail
-
-# Custom authentication Function (Use abstarct class to avoid all this hustle)
-def my_authenticate(request):
-    try:
-        this_user = request.GET["this_user"]
-        _ = User.objects.get(user_name = this_user)
-    except:
-        return False
-    return True
+from django.contrib.auth.decorators import login_required
 
 # Views here
 
 Email = ""
 real_otp = 0
-def SignUp(request):
+def signup(request):
     """
     View for Registration Form display and sending OTP
     """
@@ -61,7 +53,7 @@ def SignUp(request):
         form = MyUserForm()
     return render(request, "Registration_form.html",{"form":form})
 
-def OTP(request):
+def otp(request):
     """
     This view deals with OTP verification display
     """
@@ -85,7 +77,7 @@ def OTP(request):
     else:
         return HttpResponseRedirect("/Login")
     
-def LogIn(request):
+def login(request):
     """
     This view deals with the login functionality verifying the credentials of the user.
     """
@@ -95,26 +87,31 @@ def LogIn(request):
         keyword = ""
     if request.method == "POST":
         form = LoggingForm(request.POST)
-        this_user = request.POST.get("user_name")
+        this_user = request.POST.get("username")
         this_user_pass = request.POST.get("password")
-        if User.objects.all().filter(user_name=this_user, password=this_user_pass):
-            return HttpResponseRedirect(f"/Home/?this_user={this_user}")
+        if User.objects.all().filter(username=this_user, password=this_user_pass):
+            return HttpResponseRedirect(f"/Home/")
         else:
             return HttpResponse("Invalid Credentials")
     else:
         form = LoggingForm()
     return render(request, "LogInform.html", {"form":form, "msg":keyword}) 
 
-def Home(request):
+def home(request):
     """
     Home view here deals with the display and logic behind the HomePage
     It's showing all the quizzes being created.
     """
-    if not my_authenticate(request):
+    if not request.user.is_authenticated:
         msg = "Please Log In first for ACCESS"
         return HttpResponseRedirect(f"/Login/?message={msg}")
     all_quizzes = QuizModel.objects.all()
     return render(request, "HomePage.html", {"quizzes":all_quizzes})
 
+#This decorator works with inbuilt authentication system
+@login_required()
 def question_page(request, page_number):
+    """
+    This view renders the template for display of each particular quiz.
+    """
     return HttpResponse("These are the questions. Your time starts now!")

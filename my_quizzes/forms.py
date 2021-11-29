@@ -11,13 +11,13 @@ class MyUserForm(forms.ModelForm):
     password = forms.CharField(widget=PasswordInput())
     class Meta:
         model = User
-        fields = ["user_name", "ph_num", "password", "email"]
-        labels = {"user_name":"User Name", "ph_num":"Phone Number", "password":"Password",\
+        fields = ["username", "phone_number", "password", "email"]
+        labels = {"username":"User Name", "phone_number":"Phone Number", "password":"Password",\
             "email":"Email ID"}
 
 class LoggingForm(forms.ModelForm):
     password = forms.CharField(widget=PasswordInput())
     class Meta:
         model = User
-        fields = ["user_name","password"]
-        labels = {"user_name":"User Name", "password":"Password"}
+        fields = ["username","password"]
+        labels = {"username":"User Name", "password":"Password"}
