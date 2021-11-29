@@ -115,3 +115,6 @@ def Home(request):
         return HttpResponseRedirect(f"/Login/?message={msg}")
     all_quizzes = QuizModel.objects.all()
     return render(request, "HomePage.html", {"quizzes":all_quizzes})
+
+def question_page(request, page_number):
+    return HttpResponse("These are the questions. Your time starts now!")

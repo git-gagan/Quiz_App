@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class MarvelquizConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'MarvelQuiz'
+    name = 'my_quizzes'

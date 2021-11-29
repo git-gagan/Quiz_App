@@ -1,4 +1,5 @@
 {% load static %}
+
 <head>
     <link rel="stylesheet" href="{% static 'styles.css' %}"/>
 </head>
@@ -11,9 +12,9 @@
 {% endif %}
 <div class = "container">
     <form method="POST">
+        {% csrf_token %}
         <fieldset>
             <legend>Registration Form</legend>
-            {% csrf_token %}
             {{ form.as_table }}
             <button type="submit" class="btn btn-primary">Register</button>
             <br/>

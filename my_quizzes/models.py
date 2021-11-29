@@ -47,9 +47,7 @@ class Answer(models.Model):
     It includes all the choices for MCQ with additional parameter to specify the right one
     """
     ques_ID = models.ForeignKey(Question, on_delete=models.CASCADE)
-    solutions = models.CharField("Solution", max_length=10)
+    solutions = models.CharField("Solution", max_length=50)
     is_correct = models.BooleanField("Correct", null=True)
-    def __str__(self):
-        return self.ques_ID
     
     

@@ -1,4 +1,4 @@
-"""Quiz URL Configuration
+"""quizproject URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -19,5 +19,5 @@ from django.urls.conf import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include('MarvelQuiz.urls'))
+    path("", include('my_quizzes.urls'))
 ]

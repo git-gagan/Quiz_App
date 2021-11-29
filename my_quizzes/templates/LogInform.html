@@ -1,4 +1,5 @@
 {% load static %}
+
 <head>
     <link rel="stylesheet" href="{% static 'styles.css' %}"/>
 </head>
@@ -11,10 +12,10 @@
     <h3>Welcome to Login Page.</h3>
     <h4>Enter your credentials below</h4>
 </center>
-<form method="POST">
+<form method="POST">    
+    {% csrf_token %}
     <fieldset>
         <legend>Log In</legend>
-        {% csrf_token %}
         {{ form.as_table }}
         <button type="submit" class="btn btn-primary">Sign In</button>
         <br/>

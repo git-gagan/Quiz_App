@@ -46,7 +46,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("marvel_quiz_password")
 
 INSTALLED_APPS = [
     # Adding MarvelQuiz App here
-    'MarvelQuiz.apps.MarvelquizConfig',
+    'my_quizzes.apps.MarvelquizConfig',
     # Add 3rd party Phone number field library to apps here
     "phonenumber_field", 
     'django.contrib.admin',
@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Quiz.urls'
+ROOT_URLCONF = 'quizproject.urls'
 
 TEMPLATES = [
     {
@@ -85,7 +85,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Quiz.wsgi.application'
+WSGI_APPLICATION = 'quizproject.wsgi.application'
 
 
 # Database
