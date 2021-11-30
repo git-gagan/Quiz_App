@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, request
 from .forms import MyUserForm, LoggingForm
 import pyotp
-from .models import QuizModel, User
+from .models import Question, QuizModel, User
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 
@@ -114,4 +114,9 @@ def question_page(request, page_number):
     """
     This view renders the template for display of each particular quiz.
     """
+    for i in range(len(page_number)):
+        if page_number[i].isdigit():
+            break
+    if int(page_number[i:]) > len(QuizModel.objects.all()):
+        return HttpResponse("The Quiz with this ID doesn't exist!!")
     return HttpResponse("These are the questions. Your time starts now!")

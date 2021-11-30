@@ -18,7 +18,7 @@
 </center>
 {% for quiz in quizzes %}
     <p class = "item">
-        <a href="{{ quiz.id }}/?this_user={{ quiz.Quiz_Name }}"><button>{{ quiz.Quiz_Name }}</button></a>
+        <a href="quiz{{ quiz.id }}/"><button>{{ quiz.Quiz_Name }}</button></a>
         <br/>
     </p>
 {% endfor %}
