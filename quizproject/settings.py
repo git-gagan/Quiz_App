@@ -44,7 +44,6 @@ Instead use a different file not to be committed or environment variables.
 import os
 
 EMAIL_HOST_PASSWORD = os.environ.get("marvel_quiz_password")
-#print(EMAIL_HOST_PASSWORD)
 
 # Application definition
 

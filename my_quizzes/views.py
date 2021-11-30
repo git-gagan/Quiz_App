@@ -109,7 +109,7 @@ def home(request):
     return render(request, "HomePage.html", {"quizzes":all_quizzes})
 
 #This decorator works with inbuilt authentication system
-@login_required()
+@login_required
 def question_page(request, page_number):
     """
     This view renders the template for display of each particular quiz.
@@ -117,6 +117,8 @@ def question_page(request, page_number):
     for i in range(len(page_number)):
         if page_number[i].isdigit():
             break
-    if int(page_number[i:]) > len(QuizModel.objects.all()):
+    quiz_number = int(page_number[i:])
+    if quiz_number > len(QuizModel.objects.all()):
         return HttpResponse("The Quiz with this ID doesn't exist!!")
-    return HttpResponse("These are the questions. Your time starts now!")
+    this_quiz = QuizModel.objects.all().filter(id = quiz_number).first()
+    return render(request, "onequestion.html", {"this_quiz":this_quiz})
