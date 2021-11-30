@@ -6,12 +6,10 @@
     <p>Thanks for taking the quiz</p>
 {% else %}
     <center><h3>You are playing the quiz : <i>{{ this_quiz }}</i></h3></center>
-    {% if question %}
-            <h4>{{ question }}</h4>
-            <h5>Space for Answers</h5>
-            <br/>
-    {% else %}
-        <p>Currently No questions are there in this quiz! Try another one...</p>
-    {% endif %}
+    <p>Question here</p>
+    <form method="POST">
+        <!-- Take Input through form and save it in user_answer model-->
+        <input type="Submit" value="Submit">
+    </form>
 {% endif %}
 {% endblock %}
