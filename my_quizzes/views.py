@@ -1,7 +1,7 @@
 from django.http.response import HttpResponseNotFound, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, request
-from .models import Question, QuizModel, User
+from .models import Answer, Question, QuizModel, User
 from .forms import MyUserForm, LoggingForm
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
@@ -130,6 +130,8 @@ def question_page(request, page_number):
         if request.session["question_number"] > len(quiz_questions)-1:
             return HttpResponse("Thanks for attempting the quiz")
         return HttpResponseRedirect(f"/Home/quiz{this_quiz.id}")
+    this_question = quiz_questions[request.session["question_number"]]
+    answers = Answer.objects.all().filter(question = this_question.id)
     return render(request, "onequestion.html", {
-        "this_quiz":this_quiz, "question":quiz_questions[request.session["question_number"]]
+        "this_quiz":this_quiz, "question":this_question, "answers":answers
         })

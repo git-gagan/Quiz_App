@@ -1,6 +1,18 @@
 {% extends 'Base.html'  %}
 
 {% block content %}
+<style>
+    .default{
+        display: inline;
+        margin-left: 0;
+        padding-left: 0;
+    }
+    label{
+        display: block;
+        padding-left: 0.5rem;
+        border: 1px solid black;
+    }
+</style>
 {% if error %}
     {{ error }}
     <p>Thanks for taking the quiz</p>
@@ -10,7 +22,26 @@
         <form method="POST">
             {% csrf_token %}
             {{ question }}
-            <!-- Take Input through form and save it in user_answer model-->
+            {% if question.ques_type == "FIB" %}
+                <input type="text" name="answer" placeholder="Answer here...">
+                <br/>
+            {% else %}
+                <br/>
+                {% for answer in answers %}
+                <tr>
+                    <label>
+                        <td>
+                            <input 
+                                class="default" type="radio" value="{{ answer.solutions }}" 
+                                id="{{ answer.solutions }}" name="choice"
+                            />
+                        </td>
+                        <td>{{ answer.solutions }}</td>
+                    </label>
+                    <br/>
+                </tr>
+                {% endfor %}
+            {% endif %}
             <input type="Submit" value="Submit">
         </form>
     {% else %}
