@@ -1,14 +1,14 @@
 from django.http.response import HttpResponseNotFound, HttpResponseRedirect
-from django.shortcuts import render
-from django.http import HttpResponse, request
-from .forms import MyUserForm, LoggingForm
-import pyotp
-from .models import Question, QuizModel, User
-from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, request
+from .models import Question, QuizModel, User
+from .forms import MyUserForm, LoggingForm
+from django.core.mail import send_mail
+from django.shortcuts import redirect, render
+import pyotp
 
 # Views here
-
+number = 0
 Email = ""
 real_otp = 0
 def signup(request):
@@ -102,6 +102,7 @@ def home(request):
     Home view here deals with the display and logic behind the HomePage
     It's showing all the quizzes being created.
     """
+    request.session["question_number"] = 0
     if not request.user.is_authenticated:
         msg = "Please Log In first for ACCESS"
         return HttpResponseRedirect(f"/Login/?message={msg}")
@@ -121,5 +122,14 @@ def question_page(request, page_number):
     if quiz_number > len(QuizModel.objects.all()):
         return HttpResponse("The Quiz with this ID doesn't exist!!")
     this_quiz = QuizModel.objects.all().filter(id = quiz_number).first()
-    this_question = Question.objects.all().filter(quiz = quiz_number)
-    return render(request, "onequestion.html", {"this_quiz":this_quiz, "questions":this_question})
+    quiz_questions = Question.objects.all().filter(quiz = quiz_number)
+    #print("----------------",request.session["question_number"],"----------------")
+    #Logical Error when user presses the back button
+    if request.method == "POST":
+        request.session["question_number"] += 1
+        if request.session["question_number"] > len(quiz_questions)-1:
+            return HttpResponse("Thanks for attempting the quiz")
+        return HttpResponseRedirect(f"/Home/quiz{this_quiz.id}")
+    return render(request, "onequestion.html", {
+        "this_quiz":this_quiz, "question":quiz_questions[request.session["question_number"]]
+        })

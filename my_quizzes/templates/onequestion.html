@@ -6,10 +6,15 @@
     <p>Thanks for taking the quiz</p>
 {% else %}
     <center><h3>You are playing the quiz : <i>{{ this_quiz }}</i></h3></center>
-    <p>Question here</p>
-    <form method="POST">
-        <!-- Take Input through form and save it in user_answer model-->
-        <input type="Submit" value="Submit">
-    </form>
+    {% if question %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ question }}
+            <!-- Take Input through form and save it in user_answer model-->
+            <input type="Submit" value="Submit">
+        </form>
+    {% else %}
+        <p>No questions to display!</p>
+    {% endif %}
 {% endif %}
 {% endblock %}
