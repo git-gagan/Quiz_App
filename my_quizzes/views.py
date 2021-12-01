@@ -121,5 +121,5 @@ def question_page(request, page_number):
     if quiz_number > len(QuizModel.objects.all()):
         return HttpResponse("The Quiz with this ID doesn't exist!!")
     this_quiz = QuizModel.objects.all().filter(id = quiz_number).first()
-    this_question = Question.objects.all().filter(quiz_id = quiz_number)
+    this_question = Question.objects.all().filter(quiz = quiz_number)
     return render(request, "onequestion.html", {"this_quiz":this_quiz, "questions":this_question})
