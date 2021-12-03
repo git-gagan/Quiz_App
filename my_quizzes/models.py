@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User #Built in User model with authentication
 
 # Creating Models for my my_quizzes App
 # A model is a single source of truth about the Data we are storing
@@ -41,7 +40,7 @@ class UserAnswer(models.Model):
     """
     This model deals with the answers submitted by the user
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    #user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user_solution = models.CharField("User's Answer", max_length=30)
     
