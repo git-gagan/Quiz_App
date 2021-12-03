@@ -23,7 +23,7 @@
             {% csrf_token %}
             {{ question }}
             {% if question.ques_type == "FIB" %}
-                <input type="text" name="answer" placeholder="Answer here...">
+                <input type="text" name="answer" placeholder="Answer here..." required>
                 <br/>
             {% else %}
                 <br/>
@@ -33,7 +33,7 @@
                         <td>
                             <input 
                                 class="default" type="radio" value="{{ answer.solutions }}" 
-                                id="{{ answer.solutions }}" name="choice"
+                                id="{{ answer.solutions }}" name="choice" required
                             />
                         </td>
                         <td>{{ answer.solutions }}</td>

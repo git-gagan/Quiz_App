@@ -24,8 +24,6 @@ SECRET_KEY = 'django-insecure-nx)f*s+r@h$y#t!*my27rhtn32j6-mbqom!du$9t7mhz@+w!ed
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-AUTH_USER_MODEL = "my_quizzes.User"
-
 LOGIN_URL = "/Login"
 
 ALLOWED_HOSTS = []
@@ -45,19 +43,23 @@ import os
 
 EMAIL_HOST_PASSWORD = os.environ.get("marvel_quiz_password")
 
+AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+    )
+
 # Application definition
 
 INSTALLED_APPS = [
-    # Adding MarvelQuiz App here
-    'my_quizzes.apps.MarvelquizConfig',
-    # Add 3rd party Phone number field library to apps here
-    "phonenumber_field", 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',         
+    'django.contrib.staticfiles',  
+    'my_quizzes.apps.MarvelquizConfig',
+    "phonenumber_field",   
+    "users.apps.UsersConfig",
+    "crispy_forms"  
 ]
 
 MIDDLEWARE = [
@@ -144,3 +146,5 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

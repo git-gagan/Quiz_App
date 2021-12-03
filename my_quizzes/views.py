@@ -1,8 +1,8 @@
 from django.http.response import HttpResponseNotFound, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, request
 from .models import Answer, Question, QuizModel, User
-from .forms import MyUserForm, LoggingForm
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 import pyotp
@@ -11,10 +11,9 @@ import pyotp
 number = 0
 Email = ""
 real_otp = 0
-def signup(request):
-    """
-    View for Registration Form display and sending OTP
-    """
+"""def signup(request):
+    
+    View for Registration Form display and sending OTP"
     if request.method == "POST":
         form = MyUserForm(request.POST)
         if form.is_valid():
@@ -29,13 +28,13 @@ def signup(request):
             real_otp = totp.now()
             sender = "er.gaganraj@gmail.com"
             receiver = Email
-            message = f"""
+            message = "
                         From: From {sender}
-                        To: To {receiver}
+                        #To: To {receiver}
                         Hey Buddy, 
                         Thanks for signing up. Your OTP is {real_otp}.
                         It is valid for 2 minutes. Be quick!
-                    """
+                    "
             try:
                 send_mail(
                     'OTP verification',
@@ -51,7 +50,7 @@ def signup(request):
             return HttpResponseRedirect("Verification")
     else:
         form = MyUserForm()
-    return render(request, "Registration_form.html",{"form":form})
+    return render(request, "Registration_form.html",{"form":form})"""
 
 def otp(request):
     """
@@ -69,48 +68,46 @@ def otp(request):
                 error = "Verification Failed! Try again."
                 return HttpResponse(error)
             else:
-                msg = "Congrats!!! You are a verfied User! <a href='/Login'>Login Now</a>"
+                message = "Congrats!!! You are a verfied User! <a href='/Login'>Login Now</a>"
                 verified_obj.is_verified = True
                 verified_obj.save()
-                return HttpResponse(msg)
+                return HttpResponse(message)
         return render(request, "Verification.html")
     else:
         return HttpResponseRedirect("/Login")
     
-def login(request):
+def logging(request):
     """
     This view deals with the login functionality verifying the credentials of the user.
     """
-    try:
-        keyword = request.GET["message"]
-    except:
-        keyword = ""
     if request.method == "POST":
         form = LoggingForm(request.POST)
         this_user = request.POST.get("username")
         this_user_pass = request.POST.get("password")
-        if User.objects.all().filter(username=this_user, password=this_user_pass):
-            return HttpResponseRedirect(f"/Home/")
+        print(this_user,this_user_pass)
+        user = authenticate(request, username=this_user, password=this_user_pass)
+        print(user)
+        if user:
+            login(request, user)
+            return HttpResponseRedirect("/Home/")
         else:
             return HttpResponse("Invalid Credentials")
     else:
         form = LoggingForm()
-    return render(request, "LogInform.html", {"form":form, "msg":keyword}) 
+    return render(request, "LogInform.html", {"form":form}) 
 
+#@login_required
 def home(request):
     """
     Home view here deals with the display and logic behind the HomePage
     It's showing all the quizzes being created.
     """
     request.session["question_number"] = 0
-    if not request.user.is_authenticated:
-        msg = "Please Log In first for ACCESS"
-        return HttpResponseRedirect(f"/Login/?message={msg}")
     all_quizzes = QuizModel.objects.all()
     return render(request, "HomePage.html", {"quizzes":all_quizzes})
 
 #This decorator works with inbuilt authentication system
-@login_required
+#@login_required
 def question_page(request, page_number):
     """
     This view renders the template for display of each particular quiz.
@@ -123,12 +120,12 @@ def question_page(request, page_number):
         return HttpResponse("The Quiz with this ID doesn't exist!!")
     this_quiz = QuizModel.objects.all().filter(id = quiz_number).first()
     quiz_questions = Question.objects.all().filter(quiz = quiz_number)
-    #print("----------------",request.session["question_number"],"----------------")
+    print("----------------",request.session["question_number"],"----------------")
     #Logical Error when user presses the back button
     if request.method == "POST":
         request.session["question_number"] += 1
         if request.session["question_number"] > len(quiz_questions)-1:
-            return HttpResponse("Thanks for attempting the quiz")
+            return render(request, "result.html")
         return HttpResponseRedirect(f"/Home/quiz{this_quiz.id}")
     this_question = quiz_questions[request.session["question_number"]]
     answers = Answer.objects.all().filter(question = this_question.id)

@@ -1,24 +1,9 @@
 from django.db import models
-from phonenumber_field.modelfields import PhoneNumberField
-from django.contrib.auth.models import AbstractUser #Built in User model with authentication
+from django.contrib.auth.models import User #Built in User model with authentication
 
 # Creating Models for my my_quizzes App
 # A model is a single source of truth about the Data we are storing
 
-class User(AbstractUser):
-    """
-    This is the default user model which extends inbuilt user model
-    & consists of User Specific Data primarily intended to be user for 
-    Registration and Login purposes.
-    """
-    username = models.CharField("User Name", max_length=30, unique = True)
-    phone_number = PhoneNumberField("Phone Number", unique = True)
-    password = models.CharField("Password", max_length=20)
-    email = models.EmailField("Email ID", unique = True)
-    is_verified = models.BooleanField("Authentication Status", default=False)
-    def __str__(self):
-        return self.username
-    
 class QuizModel(models.Model):
     """
     This class deals with the Quiz data for each particular quiz.

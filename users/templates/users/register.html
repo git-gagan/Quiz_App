@@ -1,24 +1,24 @@
-{% load static %}
+{% extends "Base.html" %}
+{% load crispy_forms_tags %} 
 
-<head>
-    <link rel="stylesheet" href="{% static 'styles.css' %}"/>
-</head>
+
+{% block content %}
 <center>
     <h3>Welcome to Registration Page.</h3>
     <h4>Enter your details below</h4>
 </center>
-{% if error %}
-<p>{{ error }}</p>
-{% endif %}
 <div class = "container">
     <form method="POST">
         {% csrf_token %}
         <fieldset>
             <legend>Registration Form</legend>
-            {{ form.as_table }}
+            {{ form|crispy }}
             <button type="submit" class="btn btn-primary">Register</button>
             <br/>
-            Already a User? <a href="\Login">Log In here</a>
+            <small>
+                Already a User? <a href="\Login">Log In here</a>
+            </small>
         </fieldset>
     </form>
 </div>
+{% endblock %}
