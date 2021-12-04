@@ -6,7 +6,7 @@ from .models import Answer, Question, QuizModel
 from django.shortcuts import redirect, render
 
 # Views here
-    
+
 """def logging(request):
     This view deals with the login functionality verifying the credentials of the user.
     if request.method == "POST":
@@ -25,11 +25,15 @@ from django.shortcuts import redirect, render
         form = LoggingForm()
     return render(request, "LogInform.html", {"form":form}) 
 """
-#@login_required
+# @login_required
+
+
 def home(request):
     #request.session["question_number"] = 0
     all_quizzes = QuizModel.objects.all()
-    return render(request, "HomePage.html", {"quizzes":all_quizzes})
+    return render(request, "HomePage.html", {"quizzes": all_quizzes})
+
+
 """
 
 #This decorator works with inbuilt authentication system

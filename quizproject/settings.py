@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,11 +25,9 @@ SECRET_KEY = 'django-insecure-nx)f*s+r@h$y#t!*my27rhtn32j6-mbqom!du$9t7mhz@+w!ed
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-LOGIN_URL = "/Login"
-
 ALLOWED_HOSTS = []
-#DataFlair
-EMAIL_BACKEND ="django.core.mail.backends.smtp.EmailBackend"
+# DataFlair
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
@@ -39,13 +38,12 @@ Instead use a different file not to be committed or environment variables.
 """
 #EMAIL_HOST_PASSWORD = '******************'
 
-import os
 
 EMAIL_HOST_PASSWORD = os.environ.get("marvel_quiz_password")
 
 AUTHENTICATION_BACKENDS = (
-        'django.contrib.auth.backends.ModelBackend',
-    )
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 # Application definition
 
@@ -55,11 +53,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',  
+    'django.contrib.staticfiles',
     'my_quizzes.apps.MarvelquizConfig',
-    "phonenumber_field",   
+    "phonenumber_field",
     "users.apps.UsersConfig",
-    "crispy_forms"  
+    "crispy_forms"
 ]
 
 MIDDLEWARE = [
@@ -150,3 +148,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 AUTH_USER_MODEL = "users.CustomUser"
+
+LOGIN_REDIRECT_URL = "home-quizzes"
+LOGIN_URL = "login"

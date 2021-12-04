@@ -11,6 +11,7 @@ from .models import CustomUser
 # Workaround to make email mandatory without creating CustomUser
 CustomUser._meta.get_field('email')._unique = True
 
+
 class MyUserForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
@@ -18,12 +19,3 @@ class MyUserForm(UserCreationForm):
         model = CustomUser
         fields = ["username", "email", "password1", "password2"]
         labels = {"username": "User Name", "password": "Password"}
-
-
-"""
-class LoggingForm(forms.ModelForm):
-    password = forms.CharField(widget=PasswordInput())
-    class Meta:
-        model = User
-        fields = ["username","password"]
-        labels = {"username":"User Name", "password":"Password"}"""
