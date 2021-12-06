@@ -56,12 +56,11 @@ def result(request, page_number, name):
         total_score += question.ques_score
     for i in range(len(user_answers)):
         if user_answers[i].question.ques_type == "FIB":
-            if user_answers[i].text != answers[i].solutions.lower():
-                continue
-        else:
-            if not user_answers[i].choice.is_correct:
-                continue
-        user_score += answers[i].question.ques_score
+            if user_answers[i].text == Answer.objects.filter(question_id=user_answers[i].question).first().solutions.lower():
+                user_score += Question.objects.filter(
+                    id=user_answers[i].question.id).first().ques_score
+        elif user_answers[i].choice.is_correct:
+            user_score += answers[i].question.ques_score
 
     context = {
         "quiz_number": page_number,
