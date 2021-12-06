@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
-from django.http import HttpResponse, request
+from django.http import HttpResponse
 from .models import Answer, Question, QuizModel, UserAnswer
 from django.shortcuts import redirect, render
 
@@ -27,7 +26,7 @@ def questionpage(request, page_number, name):
             if request.method == "POST":
                 answer = UserAnswer(user=request.user, question_id=question.id)
                 if question.ques_type == "FIB":
-                    user_answer = request.POST.get("answer")
+                    user_answer = request.POST.get("answer").lower()
                     answer.text = user_answer
                 else:
                     user_choice = request.POST.get("choice")
@@ -41,8 +40,20 @@ def questionpage(request, page_number, name):
                 "this_quiz": this_quiz, "question": question, "answers": answers
             })
     else:
-        return HttpResponse("Quiz Completed")
+        return redirect(f"/home/{page_number}/{name}/result")
 
 
-def result(request):
-    pass
+@login_required
+def result(request, page_number, name):
+    quiz_questions = Question.objects.all().filter(quiz_id=page_number)
+    user_answers = UserAnswer.objects.all().filter(
+        user_id=request.user, question__quiz=page_number)
+    answers = Answer.objects.all().filter(question__quiz=page_number)
+    context = {
+        "quiz_number": page_number,
+        "quiz_name": name,
+        "questions": quiz_questions,
+        "user_answers": user_answers,
+        "answers": answers,
+    }
+    return render(request, "resultpage.html", context)

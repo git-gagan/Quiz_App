@@ -3,6 +3,7 @@ from users.models import CustomUser
 
 # A model is a single source of truth about the Data we are storing
 
+
 class QuizModel(models.Model):
     """
     This class deals with the Quiz data for each particular quiz.
@@ -49,5 +50,3 @@ class UserAnswer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.CharField("User's Answer", max_length=30, null=True, blank=True)
     choice = models.ForeignKey(Answer, on_delete=models.CASCADE, null=True, blank=True)
-    
-    
