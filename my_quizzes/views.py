@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.core.checks import messages
+from django.http import HttpResponse, request
 from .models import Answer, Question, QuizModel, UserAnswer
 from django.shortcuts import redirect, render
 
@@ -20,7 +21,7 @@ def questionpage(request, page_number, name):
     this_quiz = QuizModel.objects.all().filter(id=page_number).first()
     quiz_questions = Question.objects.all().filter(quiz_id=page_number)
     for question in quiz_questions:
-        if UserAnswer.objects.all().filter(question_id=question.id):
+        if UserAnswer.objects.all().filter(user_id=request.user, question_id=question.id):
             pass
         else:
             if request.method == "POST":
@@ -49,11 +50,26 @@ def result(request, page_number, name):
     user_answers = UserAnswer.objects.all().filter(
         user_id=request.user, question__quiz=page_number)
     answers = Answer.objects.all().filter(question__quiz=page_number)
+    total_score = 0
+    user_score = 0
+    for question in quiz_questions:
+        total_score += question.ques_score
+    for i in range(len(user_answers)):
+        if user_answers[i].question.ques_type == "FIB":
+            if user_answers[i].text != answers[i].solutions.lower():
+                continue
+        else:
+            if not user_answers[i].choice.is_correct:
+                continue
+        user_score += answers[i].question.ques_score
+
     context = {
         "quiz_number": page_number,
         "quiz_name": name,
         "questions": quiz_questions,
         "user_answers": user_answers,
         "answers": answers,
+        "total_score": total_score,
+        "user_score": user_score
     }
     return render(request, "resultpage.html", context)
