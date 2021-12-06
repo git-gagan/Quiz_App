@@ -1,13 +1,9 @@
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
-from django.http import HttpResponse, request, HttpResponseRedirect
+from django.http import HttpResponse
 from .forms import MyUserForm
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.debug import sensitive_post_parameters
 from .models import CustomUser
 import pyotp
 

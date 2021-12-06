@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.core.checks import messages
-from django.http import HttpResponse, request
+from django.contrib import messages
+from django.http import HttpResponse
 from .models import Answer, Question, QuizModel, UserAnswer
 from django.shortcuts import redirect, render
 
@@ -49,6 +49,9 @@ def result(request, page_number, name):
     quiz_questions = Question.objects.all().filter(quiz_id=page_number)
     user_answers = UserAnswer.objects.all().filter(
         user_id=request.user, question__quiz=page_number)
+    if len(user_answers) < len(quiz_questions):
+        messages.warning(request, "Please attempt the whole quiz to continue")
+        return redirect('home-quizzes')
     answers = Answer.objects.all().filter(question__quiz=page_number)
     total_score = 0
     user_score = 0
