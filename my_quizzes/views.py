@@ -1,14 +1,21 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
+from django.views import generic
 from .models import Answer, Question, QuizModel, UserAnswer
 from django.shortcuts import redirect, render
 
 
-@login_required
-def home(request):
-    all_quizzes = QuizModel.objects.all()
-    return render(request, "homepage.html", {"quizzes": all_quizzes})
+class HomeView(generic.ListView):
+    """
+    This generic view renders all the quizzes on the homepage.
+    Login required is enabled for it in URL configuration.
+    """
+    template_name = "homepage.html"
+    context_object_name = "quizzes"
+    
+    def get_queryset(self):
+        return QuizModel.objects.all()
 
 
 @login_required
@@ -47,6 +54,8 @@ def questionpage(request, page_number, name):
 @login_required
 def result(request, page_number, name):
     quiz_questions = Question.objects.all().filter(quiz_id=page_number)
+    if request.method == "POST":
+        return render(request, "resultpage.html", {"timeout":True})
     user_answers = UserAnswer.objects.all().filter(
         user_id=request.user, question__quiz=page_number)
     if len(user_answers) < len(quiz_questions):

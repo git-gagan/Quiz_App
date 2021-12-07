@@ -47,5 +47,30 @@
     {% else %}
         <p>No questions to display!</p>
     {% endif %}
+    <div align="center" id="displaytimer"><b>Timer: {% widthratio this_quiz.timer 1 60 %} seconds</b></div>
 {% endif %}
+<script>
+        const timer = document.getElementById('displaytimer')
+        t = {{ this_quiz.timer }} * 2
+        var id = setInterval(timing, 1000)
+        var timeup = false
+        function timing(){
+                t -= 1
+                timer.innerHTML = "<b>Timer: " +t+" seconds</b>"
+                if(t == 0){
+                    timer.innerHTML = "<b>Time's Up!</b>"
+                    timeup = true            
+                    console.log(timeup)
+                    clearInterval(id);
+                    timeout()
+                }
+        }
+        function timeout(){
+            if (timeup){
+                console.log(timeup)
+                $.post(`/home/{{ this_quiz.id }}/{{ this_quiz.quiz_name }}/result`)
+            }
+        }
+        
+</script>
 {% endblock %}
