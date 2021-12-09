@@ -4,6 +4,8 @@ from . import views
 
 urlpatterns = [
     path("", login_required(views.HomeView.as_view()), name="home-quizzes"),
-    path("<int:page_number>/<name>", views.questionpage, name="question-page"),
-    path("<int:page_number>/<name>/result", views.result, name="result")
+    path("<int:page_number>/<name>",
+         login_required(views.QuestionPageView.as_view()), name="question-page"),
+    path("<int:page_number>/<name>/result",
+         login_required(views.ResultView.as_view()), name="result")
 ]
