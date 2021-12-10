@@ -1,12 +1,27 @@
-{% load static %}
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
-<head>
-    <link rel="stylesheet" href="{% static 'styles.css' %}"/>
-</head>
-<h3>Verify your email:</h3>
-<form method="POST">
-    {% csrf_token %}
-    <label for="verify">OTP: </label>
-    <input type="number" id="verify" name="otp"/>
-    <button type="submit">Verify</button>
-</form>
+{% block content %}
+    <head>
+        <style>
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+            }
+        </style>
+    </head>
+    <h3>Verify your email:</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit">Verify</button>
+    </form>
+    <script>
+        document.addEventListener("wheel", function(event){
+            if(document.activeElement.type === "number"){
+                document.activeElement.blur();
+            }
+        });
+    </script>
+{% endblock %}

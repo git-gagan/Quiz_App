@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'my_quizzes.apps.MarvelquizConfig',
-    "phonenumber_field",
     "users.apps.UsersConfig",
     "crispy_forms"
 ]

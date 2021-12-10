@@ -10,7 +10,7 @@ from django.contrib.auth.views import LoginView
 from django.views.generic.base import TemplateView
 
 from .models import CustomUser
-from .forms import MyUserForm
+from .forms import MyUserForm, OtpForm
 from quizproject.settings import EMAIL_HOST_USER
 
 
@@ -85,7 +85,8 @@ class Verification(View):
         except:
             return HttpResponse("<h3>Page Not found!!</h3>")
         if not verified_obj.is_verified:
-            return render(request, "users/verification.html")
+            form = OtpForm()
+            return render(request, "users/verification.html", {"form": form})
         logout(self.request)
         return redirect("login")
 

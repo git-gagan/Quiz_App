@@ -22,3 +22,10 @@ class MyUserForm(UserCreationForm):
         model = CustomUser
         fields = ["username", "email", "password1", "password2"]
         labels = {"username": "User Name", "password": "Password"}
+
+class OtpForm(forms.ModelForm):
+    otp = forms.IntegerField(required=True)
+    
+    class Meta:
+        model = CustomUser
+        fields = ["otp"]
