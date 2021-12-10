@@ -1,9 +1,10 @@
+from django.views import generic
 from django.contrib import messages
 from django.http import HttpResponse
-from django.views import generic
-from django.views.generic.base import TemplateView
-from .models import Answer, Question, QuizModel, UserAnswer
 from django.shortcuts import redirect, render
+from django.views.generic.base import TemplateView
+
+from .models import Answer, Question, QuizModel, UserAnswer
 
 
 class HomeView(generic.ListView):
@@ -51,6 +52,7 @@ class QuestionPageView(TemplateView):
         return context
 
     def post(self, request, **kwargs):
+        print("-------------", self.request.POST.get("not_attempted"))
         id = self.request.POST.get("question")
         question = Question.objects.filter(id=id).first()
         answer = UserAnswer(user=self.request.user, question_id=id)
@@ -111,6 +113,9 @@ class ResultView(TemplateView):
         for key, value in context_dictionary.items():
             context[key] = value
         return context
+
+    def post(self, request, **kwargs):
+        print("In the post method")
 
 
 """

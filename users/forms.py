@@ -13,6 +13,9 @@ CustomUser._meta.get_field('email')._unique = True
 
 
 class MyUserForm(UserCreationForm):
+    """
+    This class extends the UserCreationForm to add email field
+    """
     email = forms.EmailField(required=True)
 
     class Meta:

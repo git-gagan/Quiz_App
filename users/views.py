@@ -1,13 +1,15 @@
-from django.contrib.auth.views import LoginView
-from django.shortcuts import redirect, render
+import pyotp
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.views.generic import View
-from quizproject.settings import EMAIL_HOST_USER
-from .forms import MyUserForm
-from django.contrib import messages
 from django.core.mail import send_mail
+from django.shortcuts import redirect, render
+from django.contrib.auth.views import LoginView
+
 from .models import CustomUser
-import pyotp
+from .forms import MyUserForm
+from quizproject.settings import EMAIL_HOST_USER
 
 
 def get_otp(request):

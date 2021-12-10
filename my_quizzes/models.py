@@ -1,4 +1,5 @@
 from django.db import models
+
 from users.models import CustomUser
 
 # A model is a single source of truth about the Data we are storing
@@ -48,5 +49,8 @@ class UserAnswer(models.Model):
     """
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    text = models.CharField("User's Answer", max_length=30, null=True, blank=True)
-    choice = models.ForeignKey(Answer, on_delete=models.CASCADE, null=True, blank=True)
+    text = models.CharField(
+        "User's Answer", max_length=30, null=True, blank=True)
+    choice = models.ForeignKey(
+        Answer, on_delete=models.CASCADE, null=True, blank=True)
+    is_attempted = models.BooleanField(null=True, blank=True)

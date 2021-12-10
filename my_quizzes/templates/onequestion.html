@@ -53,25 +53,33 @@
 {% endif %}
 <script>
         const timer = document.getElementById('displaytimer')
-        t = {{ this_quiz.timer }} * 2
+        t = {{ this_quiz.timer }} * 1
         var id = setInterval(timing, 1000)
-        var timeup = false
         function timing(){
                 t -= 1
                 timer.innerHTML = "<b>Timer: " +t+" seconds</b>"
                 if(t == 0){
                     timer.innerHTML = "<b>Time's Up!</b>"
-                    timeup = true            
-                    console.log(timeup)
                     clearInterval(id);
                     timeout()
                 }
         }
         function timeout(){
-            if (timeup){
-                console.log(timeup)
-            }
-        }
-        
+            url = "/home/{{ page_number }}/{{ name }}/result"
+            console.log("Timed out. Question remains unattempted")
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url);
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send({
+                "incomplete":true, "csrfmiddlewaretoken": '{{ csrf_token }}'
+            })
+            //window.location.replace(url);
+            //$.ajax({
+            //       type:"POST",
+            //      url: "/home/{{ page_number }}/{{ name }}/result",
+            //      data:{}
+            //  })
+            }     
 </script>
 {% endblock %}
