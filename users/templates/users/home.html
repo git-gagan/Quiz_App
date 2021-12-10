@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <style>
+        body{
+            background-image: url("https://media.istockphoto.com/vectors/quiz-game-background-vector-id1218530830?k=20&m=1218530830&s=170667a&w=0&h=d6S7k_1sCwDIs5LS1dl0iZBHma9-QGmxSv4KazzMCD4=");
+            font-size: 1.5rem;
+            margin: 1.5rem;
+        }
+        h1{
+            background-color: black;
+            border: 2px groove;
+            border-radius: 1rem;
+            font-size: 4rem;
+            color : grey
+        }
+    </style>
+    <center>
+        <h1>Welcome to the Quizzer App</h1>
+        <a href="{% url 'register' %}"><button>Register</button></a>
+        <br/>
+        <a href="{% url 'login' %}"><button>Login</button></a>
+    </center>
+{% endblock %}

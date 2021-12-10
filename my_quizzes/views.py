@@ -65,7 +65,7 @@ class QuestionPageView(TemplateView):
                 question_id=id, solutions=user_choice).first()
             answer.choice = user_object
         answer.save()
-        return redirect(f"/home/{self.kwargs['page_number']}/{self.kwargs['name']}")
+        return redirect(f"/quizzes/{self.kwargs['page_number']}/{self.kwargs['name']}")
 
 
 class ResultView(TemplateView):

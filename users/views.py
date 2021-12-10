@@ -1,3 +1,4 @@
+from django.views.generic.base import TemplateView
 import pyotp
 
 from django.contrib import messages
@@ -42,6 +43,13 @@ def get_otp(request):
         msg = "<h1>Failed to send email Try again</h1><a href = '/'><button>Try again</button></a>"
         return HttpResponse(msg)
     return real_otp
+
+
+class Home(TemplateView):
+    """
+    This view simply renders the home page for each User
+    """
+    template_name = "users/home.html"
 
 
 class Register(View):
