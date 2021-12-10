@@ -86,6 +86,7 @@ class Verification(View):
             return HttpResponse("<h3>Page Not found!!</h3>")
         if not verified_obj.is_verified:
             return render(request, "users/verification.html")
+        logout(self.request)
         return redirect("login")
 
     def post(self, request):
@@ -100,6 +101,7 @@ class Verification(View):
                 username=request.session["user"]).first()
             user_object.is_verified = True
             user_object.save()
+            logout(self.request)
             return redirect("login")
 
 
