@@ -1,4 +1,3 @@
-from django.views.generic.base import TemplateView
 import pyotp
 
 from django.contrib import messages
@@ -6,7 +5,9 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
+from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
+from django.views.generic.base import TemplateView
 
 from .models import CustomUser
 from .forms import MyUserForm
@@ -107,6 +108,26 @@ class LoginUser(LoginView):
     This inbuilt view renders the login page and takes care of validation and display
     """
     template_name = 'users/login.html'
+    
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            logout(self.request)
+            messages.warning(self.request, "You are logged out! Login here!")
+        return self.render_to_response(self.get_context_data())
+    
+    def post(self, request, *args, **kwargs):
+        current_user = self.request.POST.get("username")
+        this_user = CustomUser.objects.filter(username=current_user).first()
+        if this_user.is_verified:
+            form = self.get_form()
+            if form.is_valid():
+                return self.form_valid(form)
+            else:
+                return self.form_invalid(form)
+        else:
+            messages.warning(request, "You are not a verified User! Access denied!")
+            return redirect("register")
+        
 
 
 """
