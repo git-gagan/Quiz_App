@@ -36,16 +36,19 @@ class QuestionPageView(TemplateView):
         context = super().get_context_data(**kwargs)
         page_number = self.kwargs["page_number"]
         context["page_number"] = page_number
-        context["name"] = self.kwargs["name"]
         this_quiz = QuizModel.objects.all().filter(id=page_number).first()
         quiz_questions = Question.objects.all().filter(quiz_id=page_number)
+        current_question_number = 1
         for question in quiz_questions:
             if UserAnswer.objects.all().filter(user_id=self.request.user, question_id=question.id):
+                current_question_number += 1
                 continue
             answers = Answer.objects.all().filter(question_id=question.id)
             context["this_quiz"] = this_quiz
             context["question"] = question
             context["answers"] = answers
+            context["question_number"] = current_question_number
+            context["total_questions"] = quiz_questions.count()
             return context
         else:
             context["Completed"] = True
@@ -65,7 +68,7 @@ class QuestionPageView(TemplateView):
                 question_id=id, solutions=user_choice).first()
             answer.choice = user_object
         answer.save()
-        return redirect(f"/quizzes/{self.kwargs['page_number']}/{self.kwargs['name']}")
+        return redirect(f"/quizzes/{self.kwargs['page_number']}/")
 
 
 class ResultView(TemplateView):
@@ -84,7 +87,7 @@ class ResultView(TemplateView):
         quiz_questions = Question.objects.all().filter(quiz_id=page_number)
         user_answers = UserAnswer.objects.all().filter(
             user_id=self.request.user, question__quiz=page_number)
-        answers = Answer.objects.all().filter(question__quiz=page_number)
+        answers = Answer.objects.all().filter(question__quiz=page_number, is_correct=True)
         if len(user_answers) < len(quiz_questions):
             messages.warning(
                 self.request, "Please attempt the whole quiz to continue")
@@ -100,12 +103,11 @@ class ResultView(TemplateView):
                         id=user_answers[i].question.id).first().ques_score
             elif user_answers[i].choice.is_correct:
                 user_score += user_answers[i].question.ques_score
+        data = zip(quiz_questions, answers, user_answers)
         context_dictionary = {
             "quiz_number": page_number,
-            "quiz_name": self.kwargs["name"],
-            "questions": quiz_questions,
-            "user_answers": user_answers,
-            "answers": answers,
+            "quiz_name": QuizModel.objects.filter(id=page_number).first(),
+            "data": data,
             "total_score": total_score,
             "user_score": user_score,
             "incomplete": context["incomplete"]
@@ -113,9 +115,6 @@ class ResultView(TemplateView):
         for key, value in context_dictionary.items():
             context[key] = value
         return context
-
-    def post(self, request, **kwargs):
-        print("In the post method")
 
 
 """

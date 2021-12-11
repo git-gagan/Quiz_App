@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
-{% block content %}   
+{% block content %}  
+    <style>
+        .correct_answer{
+            background-color: lightgreen;
+        }
+        .report{
+            border: 1px solid black;
+            border-radius: 0.5rem;
+            padding: 1rem 0.5rem
+        }
+    </style>
     {% if incomplete %}
         <h3>Results Unavailable till whole quiz is attempted</h3>
         <a href="{% url 'home-quizzes' %}">GO here to attempt them</a>
@@ -19,31 +29,30 @@
                         Quiz Number :- {{ quiz_number }}<br/>
                         Quiz Name :- {{ quiz_name }}
                     </h5>
-                    <p>
-                        {% for question in questions %}
-                            <p>Question:- {{ question }}</p>
-                        {% endfor %}
-                        {% for user_answer in user_answers %}
-                            <span>Your Answer :-<span>
-                            {% if user_answer.question.ques_type == "FIB" %}
-                                <b>{{ user_answer.text }}</b>   
-                            {% else %}
-                                <b>{{ user_answer.choice.solutions }}</b>
-                            {% endif %}
+                    <p> 
+                        {% for row in data %}
                             <br/>
-                        {% endfor %}
-                        {% for answer in answers %}
-                            {% if answer.question.ques_type == "FIB" %}
-                                <span>Correct Answer :-<span>
-                                <b>{{ answer.solutions }}</b>
-                                <br/>
-                            {% else %}
-                                {% if answer.is_correct %}
+                            <h6>Question: {{ row.0 }} <span>({{ row.0.ques_score }})</span></h6>
+                            {% if row.1.question.ques_type == "FIB" %}
+                                <div class="correct_answer">
                                     <span>Correct Answer :-<span>
-                                    <b>{{ answer.solutions }}</b>
-                                    <br/>
+                                    <b>{{ row.1.solutions }}</b>
+                                </div>
+                            {% else %}
+                                {% if row.1.is_correct %}
+                                    <div class="correct_answer">
+                                        <span>Correct Answer :-<span>
+                                        <b>{{ row.1.solutions }}</b>
+                                    </div>
                                 {% endif %}
                             {% endif %}
+                            <span>Your Answer :-<span>
+                            {% if row.2.question.ques_type == "FIB" %}
+                                <b>{{ row.2.text }}</b>   
+                            {% else %}
+                                <b>{{ row.2.choice.solutions }}</b>
+                            {% endif %}
+                            <br/>
                         {% endfor %}
                     </p>
                     <h3>Your Score is {{ user_score }} out of {{ total_score }}</h3>

@@ -16,7 +16,7 @@
 {% if Completed %}
     <h2>Thanks for taking the quiz</h2>
     <h3>Here are the results</h3>
-    <a href="{% url 'result' page_number name %}">Go to Results...</a>
+    <a href="{% url 'result' page_number%}">Go to Results...</a>
 {% else %}
     <center><h3>You are playing the quiz : <i>{{ this_quiz }}</i></h3></center>
     {% if question %}
@@ -46,6 +46,9 @@
             {% endif %}
             <input type="Submit" value="Submit">
         </form>
+        <div align="center">
+            Progress :- {{ question_number }}/{{ total_questions }}
+        </div>
     {% else %}
         <p>No questions to display!</p>
     {% endif %}

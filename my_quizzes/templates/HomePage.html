@@ -19,7 +19,7 @@
 </center>
 {% for quiz in quizzes %}
     <p class = "item">
-        <a href="{% url 'question-page' quiz.id quiz.quiz_name %}"><button>{{ quiz.quiz_name }}</button></a>
+        <a href="{% url 'question-page' quiz.id %}"><button>{{ quiz.quiz_name }}</button></a>
         <br/>
     </p>
 {% endfor %}
