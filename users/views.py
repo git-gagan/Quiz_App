@@ -114,8 +114,8 @@ class LoginUser(LoginView):
     
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
-            logout(self.request)
             messages.warning(self.request, "You are logged out! Login here!")
+        logout(self.request)
         return self.render_to_response(self.get_context_data())
     
     def post(self, request, *args, **kwargs):
