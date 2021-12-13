@@ -12,8 +12,13 @@
         padding-left: 0.5rem;
         border: 1px solid black;
     }
+    #displaytimer{
+        border-bottom: 1px solid red;
+        font-size: 2rem;
+        font-family:'Courier New', Courier, monospace
+    }
 </style>
-{% if Completed %}
+{% if Completed or timeup %}
     <h2>Thanks for taking the quiz</h2>
     <h3>Here are the results</h3>
     <a href="{% url 'result' page_number%}">Go to Results...</a>
@@ -52,18 +57,19 @@
     {% else %}
         <p>No questions to display!</p>
     {% endif %}
-    <div align="center" id="displaytimer"><b>Timer: {% widthratio this_quiz.timer 1 60 %} seconds</b></div>
+    <div align="center" id="displaytimer"><b>Timer: {{ remaining_time }} seconds</b></div>
 {% endif %}
 <script>
         const timer = document.getElementById('displaytimer')
-        t = {{ this_quiz.timer }} * 1
+        t = {{ remaining_time }}
         var id = setInterval(timing, 1000)
         function timing(){
                 t -= 1
                 timer.innerHTML = "<b>Timer: " +t+" seconds</b>"
-                if(t == 0){
+                if(t <= 0){
                     timer.innerHTML = "<b>Time's Up!</b>"
                     clearInterval(id);
+                    location.reload()
                 }
         }
 </script>

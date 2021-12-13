@@ -53,4 +53,12 @@ class UserAnswer(models.Model):
         "User's Answer", max_length=30, null=True, blank=True)
     choice = models.ForeignKey(
         Answer, on_delete=models.CASCADE, null=True, blank=True)
-    is_attempted = models.BooleanField(null=True, blank=True)
+
+
+class QuizTaken(models.Model):
+    """
+    This model helps in keeping a tab of the time taken by each user per quiz
+    """
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(QuizModel, on_delete=models.CASCADE)
+    start_time = models.DateTimeField("Start Time", null=True)

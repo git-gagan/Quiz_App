@@ -1,10 +1,12 @@
+from datetime import datetime, date
+
 from django.views import generic
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 
-from .models import Answer, Question, QuizModel, UserAnswer
+from .models import Answer, Question, QuizModel, UserAnswer, QuizTaken
 
 
 class HomeView(generic.ListView):
@@ -37,13 +39,23 @@ class QuestionPageView(TemplateView):
         page_number = self.kwargs["page_number"]
         context["page_number"] = page_number
         this_quiz = QuizModel.objects.all().filter(id=page_number).first()
-        quiz_questions = Question.objects.all().filter(quiz_id=page_number)
+        quiz_questions = Question.objects.all().filter(quiz_id=page_number)   
         current_question_number = 1
         for question in quiz_questions:
             if UserAnswer.objects.all().filter(user_id=self.request.user, question_id=question.id):
                 current_question_number += 1
-                continue
+                continue   
+            if current_question_number == 1 and not QuizTaken.objects.filter(user=self.request.user, quiz=this_quiz):
+                quiz_taken = QuizTaken.objects.create(user=self.request.user, quiz=this_quiz, start_time=datetime.now())
+                quiz_taken.save()
+            quiz_taken = QuizTaken.objects.filter(user=self.request.user, quiz=this_quiz).first()
+            time_used = (datetime.now()-quiz_taken.start_time.replace(tzinfo=None)).total_seconds()
+            time_remaining = round((this_quiz.timer*10) - time_used)
+            if time_used >= this_quiz.timer*10:
+                messages.warning(self.request, "Time's UP!")
+                context["timeup"] = True
             answers = Answer.objects.all().filter(question_id=question.id)
+            context["remaining_time"] = time_remaining
             context["this_quiz"] = this_quiz
             context["question"] = question
             context["answers"] = answers
@@ -87,11 +99,12 @@ class ResultView(TemplateView):
         quiz_questions = Question.objects.all().filter(quiz_id=page_number)
         user_answers = UserAnswer.objects.all().filter(
             user_id=self.request.user, question__quiz=page_number)
-        answers = Answer.objects.all().filter(question__quiz=page_number, is_correct=True)
-        if len(user_answers) < len(quiz_questions):
+        answers = Answer.objects.all().filter(
+            question__quiz=page_number, is_correct=True)
+        """if len(user_answers) < len(quiz_questions):
             messages.warning(
                 self.request, "Please attempt the whole quiz to continue")
-            context["incomplete"] = True
+            context["incomplete"] = True"""
         total_score = 0
         user_score = 0
         for question in quiz_questions:
