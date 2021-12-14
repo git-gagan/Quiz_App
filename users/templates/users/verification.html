@@ -17,6 +17,9 @@
         {{ form|crispy }}
         <button type="submit">Verify</button>
     </form>
+    <p>
+        <button onclick="window.location.reload()">Resend OTP</button>
+    </p>
     <script>
         document.addEventListener("wheel", function(event){
             if(document.activeElement.type === "number"){

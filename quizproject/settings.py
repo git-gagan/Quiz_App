@@ -139,11 +139,14 @@ AUTH_USER_MODEL = "users.CustomUser"
 LOGIN_REDIRECT_URL = "home-quizzes"
 LOGIN_URL = "login"
 
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'er.gaganraj@gmail.com'
+
 """
 Avoid Hardcoding sensitive information like API tokens or password directly in here
 Instead use a different file not to be committed or environment variables.
