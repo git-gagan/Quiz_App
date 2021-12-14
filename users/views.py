@@ -2,7 +2,8 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.views.generic import View
 from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth import logout, login
+from django.views.generic.edit import FormView
 from django.contrib.auth.views import LoginView
 from django.views.generic.base import TemplateView
 
@@ -22,23 +23,17 @@ class Home(TemplateView):
         return self.render_to_response(context)
 
 
-class Register(View):
+class Register(FormView):
     """
     This view deals with new user registration.
     """
-
-    def get(self, request):
-        logout(self.request)
-        form = MyUserForm()
-        return render(request, "users/register.html", {"form": form})
-
-    def post(self, request):
-        form = MyUserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("verification")
-        return render(request, "users/register.html", {"form": form})
+    form_class = MyUserForm
+    template_name = "users/register.html"
+    
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect("verification")
 
 
 class Verification(View):
@@ -60,7 +55,6 @@ class Verification(View):
     def post(self, request):
         verified_obj = CustomUser.objects.all().filter(username=self.request.user).first()
         user_input = self.request.POST.get("otp")
-        print(verified_obj, user_input)
         if verified_obj.verify_otp(user_input):
             messages.success(request, f"Account created for {verified_obj.username}")
             return redirect("home-quizzes")
@@ -75,7 +69,7 @@ class LoginUser(LoginView):
     template_name = 'users/login.html'
     
     def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
+        if self.request.user.is_authenticated and self.request.user.is_verified:
             return redirect("home-quizzes")
         return self.render_to_response(self.get_context_data())
 
@@ -118,4 +112,18 @@ def register(request):
             return render(request, "users/verification.html")
         else:
             return redirect("register")
+            
+Earlier Code for verfication
+    # def get(self, request):
+    #     logout(self.request)
+    #     form = MyUserForm()
+    #     return render(request, "users/register.html", {"form": form})
+
+    # def post(self, request):
+    #     form = MyUserForm(request.POST)
+    #     if form.is_valid():
+    #         user = form.save()
+    #         login(request, user)
+    #         return redirect("verification")
+    #     return render(request, "users/register.html", {"form": form})
 """

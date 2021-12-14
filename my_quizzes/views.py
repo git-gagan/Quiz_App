@@ -3,7 +3,7 @@ from datetime import datetime
 from django.views import generic
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 
 from .models import Answer, Question, QuizModel, UserAnswer, QuizTaken
