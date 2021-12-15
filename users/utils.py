@@ -10,7 +10,7 @@ def mail(email, otp):
                 #To: To {receiver}
                 Hey Buddy, 
                 Thanks for signing up. Your OTP is {otp}.
-                It is valid for 2 minutes. Be quick!
+                It is valid for 1 minute. Be quick!
                 """
     send_mail(
         'OTP verification',

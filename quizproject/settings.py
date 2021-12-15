@@ -154,4 +154,4 @@ Instead use a different file not to be committed or environment variables.
 """
 #EMAIL_HOST_PASSWORD = '******************'
 
-EMAIL_HOST_PASSWORD = os.environ.get("marvel_quiz_password")
+EMAIL_HOST_PASSWORD = os.environ.get("quiz_password")

@@ -68,10 +68,9 @@ class LoginUser(LoginView):
     """
     template_name = 'users/login.html'
     
-    def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return redirect("home-quizzes")
-        return self.render_to_response(self.get_context_data())
+    def get(self, request, *args, **kwargs):
+        logout(self.request)
+        return super().get(request, *args, **kwargs)
     
     def form_valid(self, form):
         """Security check complete. Log the user in."""

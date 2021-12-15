@@ -24,9 +24,16 @@ class Question(models.Model):
     The question can be both MCQ or FIB which is determined by the type field
     Also, quiz_id is the foreign key which maps to QuizModel.
     """
+    MCQ = "MCQ"
+    FIB = "FIB"
+    
+    question_types = [
+        (MCQ, "Multiple Choice"),(FIB, "Fill Ups")
+    ]
+    
     ques_text = models.CharField("Question", max_length=40)
     ques_score = models.SmallIntegerField("Marks")
-    ques_type = models.CharField("Type", max_length=3)
+    ques_type = models.CharField("Type", choices=question_types, max_length=3)
     quiz = models.ForeignKey(QuizModel, on_delete=models.CASCADE)
 
     def __str__(self):

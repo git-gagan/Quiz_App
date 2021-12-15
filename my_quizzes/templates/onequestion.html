@@ -29,7 +29,7 @@
             {% csrf_token %}
             <input type="hidden" name="question" value="{{ question.id }}"/>
             {{ question }}
-            {% if question.ques_type == "FIB" %}
+            {% if question.ques_type == question.FIB %}
                 <input type="text" name="answer" placeholder="Answer here..." required>
                 <br/>
             {% else %}
