@@ -1,9 +1,9 @@
 from django.core.mail import send_mail
-from quizproject.settings import EMAIL_HOST_USER
+#from quizproject.settings import EMAIL_HOST_USER
 
 
 def mail(email, otp):
-    sender = EMAIL_HOST_USER
+    sender = 'er.gaganraj@gmail.com'
     receiver = email
     message = f"""
                 From: From {sender}

@@ -6,6 +6,8 @@ from django.contrib.auth import logout, login
 from django.views.generic.edit import FormView
 from django.contrib.auth.views import LoginView
 from django.views.generic.base import TemplateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 
 from .utils import mail
 from .models import CustomUser
@@ -35,7 +37,7 @@ class Register(FormView):
         login(self.request, user)
         return redirect("verification")
 
-
+@method_decorator(never_cache, name='dispatch')
 class Verification(View):
     """
     This view deals with rendering the OTP page and verifying the user
@@ -61,7 +63,7 @@ class Verification(View):
         messages.warning(self.request, "Verification Failed! Try Again")
         return redirect("login")
 
-
+@method_decorator(never_cache, name='dispatch')
 class LoginUser(LoginView):
     """
     This inbuilt view renders the login page and takes care of validation and display
