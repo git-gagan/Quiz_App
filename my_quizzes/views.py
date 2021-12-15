@@ -20,12 +20,6 @@ class HomeView(generic.ListView):
     def get_queryset(self):
         self.request.session["timeup"] = False
         return QuizModel.objects.all()
-    
-    def get(self, request):
-        if not self.request.user.is_verified:
-            messages.warning(self.request, "You are not a verified user. ACCESS denied!")
-            return redirect("verification")
-        return super().get(request)
 
 
 class QuestionPageView(TemplateView):
@@ -94,6 +88,9 @@ class QuestionPageView(TemplateView):
 
 
 class ResultView(TemplateView):
+    """
+    This view renders the result page with appropriate values and data
+    """
     template_name = "resultpage.html"
 
     def dispatch(self, request, *args, **kwargs):

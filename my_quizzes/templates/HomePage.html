@@ -10,6 +10,17 @@
     button{
         width:50%;
         margin:0 auto;
+        padding: 0.5rem;
+    }
+    div{
+        position:fixed;
+        bottom:0;
+        width: 100%;
+        margin-bottom:2rem;
+    }
+    .logout{
+        border: 1px groove dodgerblue;
+        border-radius: 0.5rem;
     }
 </style>
 <center>
@@ -23,4 +34,7 @@
         <br/>
     </p>
 {% endfor %}
+<div align="center">
+    <a href="{% url 'logout' %}"><button class="logout">Logout</button></a>
+</div>
 {% endblock %}

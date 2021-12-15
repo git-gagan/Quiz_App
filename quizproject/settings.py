@@ -136,6 +136,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 AUTH_USER_MODEL = "users.CustomUser"
 
+LOGOUT_REDIRECT_URL = "login"
 LOGIN_REDIRECT_URL = "home-quizzes"
 LOGIN_URL = "login"
 

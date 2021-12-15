@@ -69,10 +69,19 @@ class LoginUser(LoginView):
     template_name = 'users/login.html'
     
     def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated and self.request.user.is_verified:
+        if self.request.user.is_authenticated:
             return redirect("home-quizzes")
         return self.render_to_response(self.get_context_data())
-
+    
+    def form_valid(self, form):
+        """Security check complete. Log the user in."""
+        login(self.request, form.get_user())
+        if self.request.user.is_verified:
+            messages.success(self.request, "Logged in Successfully!")
+            return redirect("home-quizzes")
+        messages.warning(self.request, "You are not a verified user. ACCESS denied!")
+        return redirect("verification")
+    
 
 """
 ---Function based approach---
