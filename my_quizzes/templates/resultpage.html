@@ -32,51 +32,47 @@
             <h2>Results</h2>
             <h3><i>...Thanks for taking the Quiz...</i></h3>
         </center>
-        {% if timeout %}
-            <h2>Time's up..!</h2>
-        {% else %}
-            <div class="container">
-                <h4>Here is your scorecard:-</h4>
-                <div class="report">
-                    <h5>
-                        Quiz Number :- {{ quiz_number }}<br/>
-                        Quiz Name :- {{ quiz_name }}
-                    </h5>
-                    <p> 
-                        {% for row in data %}
-                            <br/>
-                            <h6>Question: {{ row.0 }} <span>({{ row.0.ques_score }})</span></h6>
-                            {% if row.1.question.ques_type == row.1.question.FIB %}
+        <div class="container">
+            <h4>Here is your scorecard:-</h4>
+            <div class="report">
+                <h5>
+                    Quiz Number :- {{ quiz_number }}<br/>
+                    Quiz Name :- {{ quiz_name }}
+                </h5>
+                <p> 
+                    {% for row in data %}
+                        <br/>
+                        <h6>Question: {{ row.0 }} <span>({{ row.0.ques_score }})</span></h6>
+                        {% if row.1.question.ques_type == row.1.question.FIB %}
+                            <div class="correct_answer">
+                                <span>Correct Answer :-<span>
+                                <b>{{ row.1.solutions }}</b>
+                            </div>
+                        {% else %}
+                            {% if row.1.is_correct %}
                                 <div class="correct_answer">
                                     <span>Correct Answer :-<span>
                                     <b>{{ row.1.solutions }}</b>
                                 </div>
-                            {% else %}
-                                {% if row.1.is_correct %}
-                                    <div class="correct_answer">
-                                        <span>Correct Answer :-<span>
-                                        <b>{{ row.1.solutions }}</b>
-                                    </div>
-                                {% endif %}
                             {% endif %}
-                            <span>Your Answer :-<span>
-                            {% if row.2.question.ques_type == row.2.question.FIB %}
-                                <b>{{ row.2.text }}</b>   
-                            {% else %}
-                                <b>{{ row.2.choice.solutions }}</b>
-                            {% endif %}
-                            <br/>
-                        {% endfor %}
-                    </p>
-                    <h3>Your Score is {{ user_score }} out of {{ total_score }}</h3>
-                </div>
+                        {% endif %}
+                        <span>Your Answer :-<span>
+                        {% if row.2.question.ques_type == row.2.question.FIB %}
+                            <b>{{ row.2.text }}</b>   
+                        {% else %}
+                            <b>{{ row.2.choice.solutions }}</b>
+                        {% endif %}
+                        <br/>
+                    {% endfor %}
+                </p>
+                <h3>Your Score is {{ user_score }} out of {{ total_score }}</h3>
             </div>
-            <div align="center">
-                <a href="{% url 'home-quizzes' %}"><button>Home</button></a>
-            </div>
-            <footer>
-                <small>Regards: Gaganraj</small>
-            </footer>
-        {% endif %}
+        </div>
+        <div align="center">
+            <a href="{% url 'home-quizzes' %}"><button>Home</button></a>
+        </div>
+        <footer>
+            <small>Regards: Gaganraj</small>
+        </footer>
     {% endif %}
 {% endblock %}

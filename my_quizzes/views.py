@@ -5,10 +5,13 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 
 from .models import Answer, Question, QuizModel, UserAnswer, QuizTaken
 
 
+@method_decorator(never_cache, name='dispatch')
 class HomeView(generic.ListView):
     """
     This generic view renders all the quizzes on the homepage.
@@ -22,6 +25,7 @@ class HomeView(generic.ListView):
         return QuizModel.objects.all()
 
 
+@method_decorator(never_cache, name='dispatch')
 class QuestionPageView(TemplateView):
     """
     This view deals with rendering of questions one by one and
@@ -54,8 +58,8 @@ class QuestionPageView(TemplateView):
                 user=self.request.user, quiz=this_quiz).first()
             time_used = (
                 datetime.now()-quiz_taken.start_time.replace(tzinfo=None)).total_seconds()
-            time_remaining = round((this_quiz.timer*10) - time_used)
-            if time_used >= this_quiz.timer*10:
+            time_remaining = round((this_quiz.timer) - time_used)
+            if time_used >= this_quiz.timer:
                 messages.warning(self.request, "Time's UP!")
                 context["timeup"] = True
                 self.request.session["timeup"] = True
@@ -87,6 +91,7 @@ class QuestionPageView(TemplateView):
         return redirect(f"/quizzes/{self.kwargs['page_number']}/")
 
 
+@method_decorator(never_cache, name='dispatch')
 class ResultView(TemplateView):
     """
     This view renders the result page with appropriate values and data
@@ -116,6 +121,8 @@ class ResultView(TemplateView):
         user_score = 0
         for question in quiz_questions:
             total_score += question.ques_score
+            """user_answer = UserAnswer.objects.filter(user=self.request.user, question=question.id)
+            if question.ques_type == "FIB":""" 
         for i in range(len(user_answers)):
             if user_answers[i].question.ques_type == "FIB":
                 if user_answers[i].text == Answer.objects.filter(question_id=user_answers[i].question).first().solutions.lower():

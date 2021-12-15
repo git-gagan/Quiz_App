@@ -11,15 +11,19 @@
             }
         </style>
     </head>
-    <h3>Verify your email:</h3>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit">Verify</button>
-    </form>
-    <p>
-        <button onclick="window.location.reload()">Resend OTP</button>
-    </p>
+    <div class="container">
+        <h3>Verify your email:</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset>
+                <legend>Verification</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <br/>
+            <button type="submit" class="btn btn-primary">Verify</button>
+            <button onclick="window.location.reload()" class="btn btn-primary">Resend OTP</button>
+        </form>
+    </div>
     <script>
         document.addEventListener("wheel", function(event){
             if(document.activeElement.type === "number"){
