@@ -117,19 +117,29 @@ class ResultView(TemplateView):
             messages.warning(
                 self.request, "Please attempt the whole quiz to continue")
             context["incomplete"] = True
+            return context
         total_score = 0
         user_score = 0
         for question in quiz_questions:
             total_score += question.ques_score
-            """user_answer = UserAnswer.objects.filter(user=self.request.user, question=question.id)
-            if question.ques_type == "FIB":""" 
-        for i in range(len(user_answers)):
-            if user_answers[i].question.ques_type == "FIB":
-                if user_answers[i].text == Answer.objects.filter(question_id=user_answers[i].question).first().solutions.lower():
-                    user_score += Question.objects.filter(
-                        id=user_answers[i].question.id).first().ques_score
-            elif user_answers[i].choice.is_correct:
-                user_score += user_answers[i].question.ques_score
+            user_answer = UserAnswer.objects.filter(user=self.request.user, question=question).first()
+            if not user_answer:
+                user_answer = UserAnswer.objects.create(user=self.request.user, question=question)
+                if question.ques_type == question.FIB:
+                    user_answer.text = ""
+                else:
+                    user_answer.choice = None
+                user_answer.save()
+            else:
+                if question.ques_type == question.FIB:
+                    if user_answer.text == Answer.objects.filter(question=user_answer.question).first().solutions.lower():
+                        user_score += Question.objects.filter(
+                            id=user_answer.question.id).first().ques_score
+                else:
+                    if user_answer.choice and user_answer.choice.is_correct:
+                        user_score += user_answer.question.ques_score   
+        user_answers = UserAnswer.objects.all().filter(
+            user_id=self.request.user, question__quiz=page_number)     
         data = zip(quiz_questions, answers, user_answers)
         context_dictionary = {
             "quiz_number": page_number,
@@ -142,6 +152,7 @@ class ResultView(TemplateView):
         for key, value in context_dictionary.items():
             context[key] = value
         return context
+
 
 
 """
@@ -206,4 +217,14 @@ def result(request, page_number, name):
         "total_score": total_score,
         "user_score": user_score
     }
+    
+Earlier Approach to render result page for scoring
+
+    for i in range(len(user_answers)):
+        if user_answers[i].question.ques_type == "FIB":
+            if user_answers[i].text == Answer.objects.filter(question_id=user_answers[i].question).first().solutions.lower():
+                user_score += Question.objects.filter(
+                    id=user_answers[i].question.id).first().ques_score
+        elif user_answers[i].choice.is_correct:
+            user_score += user_answers[i].question.ques_score
 """
