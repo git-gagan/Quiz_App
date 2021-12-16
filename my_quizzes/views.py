@@ -62,7 +62,6 @@ class QuestionPageView(TemplateView):
             if time_used >= this_quiz.timer:
                 messages.warning(self.request, "Time's UP!")
                 context["timeup"] = True
-                self.request.session["timeup"] = True
             answers = Answer.objects.all().filter(question_id=question.id)
             context["remaining_time"] = time_remaining
             context["this_quiz"] = this_quiz
@@ -113,10 +112,16 @@ class ResultView(TemplateView):
             user_id=self.request.user, question__quiz=page_number)
         answers = Answer.objects.all().filter(
             question__quiz=page_number, is_correct=True)
-        if len(user_answers) < len(quiz_questions) and not self.request.session["timeup"]:
-            messages.warning(
-                self.request, "Please attempt the whole quiz to continue")
+        quiz_taken = QuizTaken.objects.filter(user=self.request.user, quiz_id=self.kwargs['page_number']).first()
+        if not quiz_taken:
+            print("Here iam------------------")
+            messages.warning(self.request, "Please attempt the Quiz First to see results")
             context["incomplete"] = True
+            return context
+        time_difference = (datetime.now() - quiz_taken.start_time.replace(tzinfo=None)).total_seconds()
+        if time_difference < quiz_taken.quiz.timer and len(user_answers) < len(quiz_questions):
+            context["incomplete"] = True
+            messages.warning(self.request, "Quiz Under Progress. Please complete it!")
             return context
         total_score = 0
         user_score = 0
