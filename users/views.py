@@ -60,7 +60,7 @@ class Verification(View):
         if verified_obj.verify_otp(user_input):
             messages.success(request, f"Account created for {verified_obj.username}")
             return redirect("home-quizzes")
-        messages.warning(self.request, "Verification Failed! Try Again")
+        messages.warning(self.request, "Verification Failed! LogIn to try again!")
         return redirect("login")
 
 @method_decorator(never_cache, name='dispatch')
@@ -83,6 +83,7 @@ class LoginUser(LoginView):
         messages.warning(self.request, "You are not a verified user. ACCESS denied!")
         return redirect("verification")
     
+
 
 """
 ---Function based approach---
