@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'my_quizzes.apps.MarvelquizConfig',
     "users.apps.UsersConfig",
-    "crispy_forms"
+    "crispy_forms",
+    "rest_framework",
+    "api"
 ]
 
 MIDDLEWARE = [
