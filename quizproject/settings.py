@@ -46,7 +46,12 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "crispy_forms",
     "rest_framework",
-    "api"
+    "rest_auth",
+    "api.apps.ApiConfig",
+    "allauth",
+    "allauth.account",
+    "django.contrib.sites",
+    "rest_framework.authtoken"
 ]
 
 MIDDLEWARE = [
@@ -156,4 +161,6 @@ Avoid Hardcoding sensitive information like API tokens or password directly in h
 Instead use a different file not to be committed or environment variables.
 """
 #EMAIL_HOST_PASSWORD = '******************'
+
+SITE_ID = 1
 

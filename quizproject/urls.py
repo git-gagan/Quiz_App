@@ -20,5 +20,6 @@ from django.urls.conf import include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include('users.urls')),
-    path("quizzes/", include('my_quizzes.urls'))
+    path("quizzes/", include('my_quizzes.urls')),
+    path("api/", include('api.urls')),          # Path for API access
 ]
