@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "api.apps.ApiConfig",
     "allauth",
     "allauth.account",
+    "allauth.socialaccount",
+    'allauth.socialaccount.providers.openid',
     "django.contrib.sites",
     "rest_framework.authtoken"
 ]
@@ -164,3 +166,4 @@ Instead use a different file not to be committed or environment variables.
 
 SITE_ID = 1
 
+ACCOUNT_EMAIL_VERIFICATION = 'none'

@@ -1,7 +1,15 @@
+from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
-from users import models
+from my_quizzes import models
+        
 
-class UserSerializer(serializers.ModelSerializer):
+class CustomRegisterSerializer(RegisterSerializer):
+    pass
+
+
+class QuizSerializer(serializers.ModelSerializer):
+    "Class dealing with serialization of QuizModel fields"
     class Meta:
-        model = models.CustomUser
-        fields = ('email', 'username', 'is_verified')
+        model = models.QuizModel
+        fields = ('quiz_name', 'timer')
+        
