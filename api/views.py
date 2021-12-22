@@ -1,4 +1,4 @@
-from django.contrib.auth import login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 
 from rest_framework import generics
@@ -36,14 +36,16 @@ class LoginView(APIView):
 
     def post(self, request):
         user_data = self.request.data
-        user_object = CustomUser.objects.filter(username=user_data["username"]).first()
+        user_object = CustomUser.objects.filter(username=user_data["username"], email=user_data["email"]).first()
         if user_object:
-            token = Token.objects.get_or_create(user=user_object)[0].key
-            if user_object.is_verified:
-                login(self.request, user_object)
-                json = {"status":"Logged In", "token":token}
-                return Response(json)
-            return Response({"status":"Can't login before OTP verification", "token":token})
+            user_credentials = authenticate(request, username=user_data["username"], password=user_data["password"])
+            if user_credentials:
+                token = Token.objects.get_or_create(user=user_object)[0].key
+                if user_object.is_verified:
+                    login(self.request, user_object)
+                    json = {"status":"Logged In", "token":token}
+                    return Response(json)
+                return Response({"status":"Can't login before OTP verification", "token":token})
         return Response("Error Logging In")
 
 class LogoutView(APIView):
