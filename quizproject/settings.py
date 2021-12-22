@@ -46,14 +46,9 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "crispy_forms",
     "rest_framework",
-    "rest_auth",
+    "rest_framework.authtoken",
     "api.apps.ApiConfig",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    'allauth.socialaccount.providers.openid',
     "django.contrib.sites",
-    "rest_framework.authtoken"
 ]
 
 MIDDLEWARE = [
@@ -167,3 +162,9 @@ Instead use a different file not to be committed or environment variables.
 SITE_ID = 1
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+REST_FRAMEWORK = {
+  'DEFAULT_AUTHENTICATION_CLASSES': (
+      'rest_framework.authentication.TokenAuthentication',
+    )
+}

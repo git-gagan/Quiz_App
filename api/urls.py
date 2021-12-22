@@ -3,9 +3,10 @@ from django.urls import include, path
 from . import views
 
 urlpatterns = [
-    path("users/", include('users.urls')),
-    path("rest-auth/", include('rest_auth.urls')),
-    path("", views.QuizListView.as_view()),
-    path('rest-auth/registration/', include('rest_auth.registration.urls')),
-    path('rest-auth/verification/', views.VerificationView.as_view())
+    path("", views.QuizListView.as_view(), name="api-quiz-list"),
+    path("register/", views.RegisterView.as_view(), name="api-register"),
+    path("login/", views.LoginView.as_view(), name="api-login"),
+    path("logout/", views.LogoutView.as_view(), name="api-logout"),
+    path('verification/', views.VerificationView.as_view(), name="api-verification"),
+    path('<int:quiz_id>/', views.QuestionListView.as_view(), name="api-question")
 ]
