@@ -49,6 +49,9 @@ class Answer(models.Model):
     solutions = models.CharField("Solution", max_length=50)
     is_correct = models.BooleanField("Correct", null=True)
 
+    def __str__(self):
+        return self.solutions
+
 
 class UserAnswer(models.Model):
     """
