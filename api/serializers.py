@@ -1,3 +1,4 @@
+from django.db.models import fields
 from rest_framework import serializers
 from my_quizzes import models
 from users.models import CustomUser
@@ -30,4 +31,20 @@ class QuestionSerializer(serializers.ModelSerializer):
     "Class dealing with serialization of Questions one at a time"
     class Meta:
         model = models.Question
-        fields = ('ques_text',)
+        fields = ('id', 'ques_text', 'ques_type',)
+
+
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Answer
+        fields = ('id' ,'solutions',)
+
+
+class UserAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserAnswer
+        fields = ('user', 'question', 'text', 'choice',)
+    
+    def create(self, validated_data):
+        user_answer = models.UserAnswer.objects.create(**validated_data)
+        return user_answer
