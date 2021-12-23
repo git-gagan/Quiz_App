@@ -114,7 +114,6 @@ class ResultView(TemplateView):
             question__quiz=page_number, is_correct=True)
         quiz_taken = QuizTaken.objects.filter(user=self.request.user, quiz_id=self.kwargs['page_number']).first()
         if not quiz_taken:
-            print("Here iam------------------")
             messages.warning(self.request, "Please attempt the Quiz First to see results")
             context["incomplete"] = True
             return context

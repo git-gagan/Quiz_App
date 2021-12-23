@@ -134,7 +134,8 @@ class QuestionListView(APIView):
             if question.ques_type == question.MCQ:
                 mcq = True
                 answer = models.Answer.objects.filter(question=question)
-                serialized_choices = serializers.AnswerSerializer(answer, many=True)
+                serialized_choices = serializers.AnswerSerializer(
+                    answer, many=True)
                 json_choices = JSONRenderer().render(serialized_choices.data)
             if mcq:
                 return Response({"Question": json_obj, "Options": json_choices})
@@ -144,9 +145,50 @@ class QuestionListView(APIView):
     def post(self, request, *args, **kwargs):
         user = self.get_data(request)
         if models.UserAnswer.objects.filter(user=user, question_id=request.data["question"]):
-            return Response({"Status":"Already Attempted"})
+            return Response({"Status": "Already Attempted"})
         serializer = serializers.UserAnswerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=user)
-            return Response({"Status":"Success"})
-        return Response({"Status":"Failure", "error":serializer.errors})
+            return Response({"Status": "Success"})
+        return Response({"Status": "Failure", "error": serializer.errors})
+
+
+class ResultView(APIView):
+    """
+    This view deals with the Quiz Result and score for each quiz
+    """
+
+    def get(self, request, *args, **kwargs):
+        if self.kwargs['quiz_id'] > len(models.QuizModel.objects.all()):
+            return Response({"Status": "The Quiz with this ID doesn't exist!!"})
+        try:
+            token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        except:
+            return JsonResponse({"Status": "Failing to parse token"})
+        user = Token.objects.get(key=token).user
+        quiz_id = self.kwargs['quiz_id']
+        quiz_questions = models.Question.objects.all().filter(quiz_id=quiz_id)
+        user_answers = models.UserAnswer.objects.all().filter(
+            user_id=user, question__quiz=quiz_id)
+        answers = models.Answer.objects.all().filter(
+            question__quiz=quiz_id, is_correct=True)
+        if len(user_answers) < len(quiz_questions):
+            return Response({"Status": "Please attempt the whole quiz to see the results"})
+        total_score = 0
+        user_score = 0
+        for question in quiz_questions:
+            total_score += question.ques_score
+        for i in range(len(user_answers)):
+            if user_answers[i].question.ques_type == "FIB":
+                if user_answers[i].text.lower() == models.Answer.objects.filter(question_id=user_answers[i].question).first().solutions.lower():
+                    user_score += models.Question.objects.filter(
+                        id=user_answers[i].question.id).first().ques_score
+            elif user_answers[i].choice.is_correct:
+                user_score += answers[i].question.ques_score
+        quiz_name = models.QuizModel.objects.filter(id=quiz_id).first()
+        return Response({
+            "Message": "Thanks for attempting the Quiz",
+            "Quiz Name": quiz_name.quiz_name,
+            "Your Score": user_score,
+            "Total Score": total_score
+        })

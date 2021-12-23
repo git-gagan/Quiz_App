@@ -8,5 +8,6 @@ urlpatterns = [
     path("login/", views.LoginView.as_view(), name="api-login"),
     path("logout/", views.LogoutView.as_view(), name="api-logout"),
     path('verification/', views.VerificationView.as_view(), name="api-verification"),
-    path('<int:quiz_id>/', views.QuestionListView.as_view(), name="api-question")
+    path('<int:quiz_id>/', views.QuestionListView.as_view(), name="api-question"),
+    path('<int:quiz_id>/result/', views.ResultView.as_view(), name="api-result")
 ]
