@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 
 from rest_framework import generics
@@ -25,7 +28,7 @@ class RegisterView(APIView):
             user = serializer.save()
             if user:
                 token = Token.objects.get_or_create(user=user)[0].key
-                json = {"status": "Logged In", "token": token}
+                json = {"status": "Registered", "token": token}
                 return Response(json, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -58,8 +61,13 @@ class LogoutView(APIView):
     """
 
     def get(self, request):
-        if self.request.user.is_authenticated and self.request.user.is_verified:
-            self.request.user.auth_token.delete()
+        try:
+            token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+            user = Token.objects.get(key=token).user
+        except:
+            return Response({"Status":"Cannot Parse your token! Try Again!"})
+        if user.is_authenticated and user.is_verified:
+            user.auth_token.delete()
             logout(self.request)
             return Response({"Status": "Succesfully Logged Out!"})
         return Response({"Status": "Login First"})
@@ -70,8 +78,18 @@ class VerificationView(APIView):
     This API view deals with the verification of newly registered users
     """
 
+    def get_data(self, request):
+        try:
+            token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+            user = Token.objects.get(key=token).user
+        except:
+            return -1
+        return user
+
     def get(self, request, *args, **kwargs):
-        user = self.request.user
+        user = self.get_data(request)
+        if user == -1:
+            return Response({"Status":"Failed to parse Token"})
         if not user.is_authenticated:
             return JsonResponse({"Status": "Registration needed"})
         if user.is_authenticated and not user.is_verified:
@@ -82,8 +100,11 @@ class VerificationView(APIView):
             return JsonResponse({"status": "Verified!"})
 
     def post(self, request, *args, **kwargs):
+        user = self.get_data(request)
+        if user == -1 or "otp" not in request.data:
+            return JsonResponse({"Status":"Invalid POST request!"})
         user_otp = request.data["otp"]
-        if self.request.user.verify_otp(user_otp):
+        if user.verify_otp(user_otp):
             return Response({"status": "Successfully Verified!"})
         else:
             return Response({"status": "Verification Failed!"})
@@ -97,8 +118,11 @@ class QuizListView(generics.ListAPIView):
     serializer_class = serializers.QuizSerializer
 
     def get(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-        user = Token.objects.get(key=token).user
+        try:
+            token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+            user = Token.objects.get(key=token).user
+        except:
+            return Response({"Status":"Cannot Parse your token! Try Again!"})
         if user.is_authenticated and user.is_verified:
             return self.list(request, *args, **kwargs)
         return JsonResponse({"Status": "Unauthorized user. ACCESS denied!"})
@@ -113,15 +137,19 @@ class QuestionListView(APIView):
     def get_data(self, request):
         try:
             token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+            user = Token.objects.get(key=token).user
         except:
-            return JsonResponse({"Status": "Failing to parse token"})
-        return Token.objects.get(key=token).user
+            return -1
+        return user
 
     def get(self, request, *args, **kwargs):
         user = self.get_data(request)
+        if user == -1:
+            return JsonResponse({"Status": "Failing to parse token"})
         quiz_id = self.kwargs["quiz_id"]
         if not models.QuizModel.objects.filter(id=quiz_id):
             return JsonResponse({"Status": "The Quiz with this ID doesn't exist"})
+        this_quiz = models.QuizModel.objects.all().filter(id=quiz_id).first()
         quiz_questions = models.Question.objects.all().filter(quiz_id=quiz_id)
         current_question_number = 1
         for question in quiz_questions:
@@ -129,6 +157,17 @@ class QuestionListView(APIView):
             if models.UserAnswer.objects.filter(user=user, question_id=question.id):
                 current_question_number += 1
                 continue
+            if current_question_number == 1 and not models.QuizTaken.objects.filter(user=user, quiz=this_quiz):
+                quiz_taken = models.QuizTaken.objects.create(
+                    user=user, quiz=this_quiz, start_time=datetime.now())
+                quiz_taken.save()
+            quiz_taken = models.QuizTaken.objects.filter(
+                user=user, quiz=this_quiz).first()
+            time_used = (
+                datetime.now()-quiz_taken.start_time.replace(tzinfo=None)).total_seconds()
+            time_remaining = round((this_quiz.timer) - time_used)
+            if time_used >= this_quiz.timer:
+                return Response({"Status": "Time's UP!"})
             serialized_obj = serializers.QuestionSerializer(question)
             json_obj = JSONRenderer().render(serialized_obj.data)
             if question.ques_type == question.MCQ:
@@ -138,12 +177,20 @@ class QuestionListView(APIView):
                     answer, many=True)
                 json_choices = JSONRenderer().render(serialized_choices.data)
             if mcq:
-                return Response({"Question": json_obj, "Options": json_choices})
-            return Response({"Question": json_obj})
+                return Response({"Question": json_obj, "Options": json_choices, "Time-Left": time_remaining})
+            return Response({"Question": json_obj, "Time-Left": time_remaining})
         return Response({"Status": "Quiz Completed!"})
 
     def post(self, request, *args, **kwargs):
         user = self.get_data(request)
+        if user == -1:
+            return JsonResponse({"Status": "Failing to parse token"})
+        quiz_taken = models.QuizTaken.objects.filter(
+            user=user, quiz=self.kwargs["quiz_id"]).first()
+        if not quiz_taken:
+            return Response({"Status":"Please Attempt the Quiz First!"})
+        if (datetime.now()-quiz_taken.start_time.replace(tzinfo=None)).total_seconds() > quiz_taken.quiz.timer:
+            return Response({"Status": "Time's UP!"})
         if models.UserAnswer.objects.filter(user=user, question_id=request.data["question"]):
             return Response({"Status": "Already Attempted"})
         serializer = serializers.UserAnswerSerializer(data=request.data)
@@ -163,32 +210,61 @@ class ResultView(APIView):
             return Response({"Status": "The Quiz with this ID doesn't exist!!"})
         try:
             token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+            user = Token.objects.get(key=token).user
         except:
             return JsonResponse({"Status": "Failing to parse token"})
-        user = Token.objects.get(key=token).user
         quiz_id = self.kwargs['quiz_id']
         quiz_questions = models.Question.objects.all().filter(quiz_id=quiz_id)
         user_answers = models.UserAnswer.objects.all().filter(
             user_id=user, question__quiz=quiz_id)
         answers = models.Answer.objects.all().filter(
             question__quiz=quiz_id, is_correct=True)
-        if len(user_answers) < len(quiz_questions):
+        quiz_taken = models.QuizTaken.objects.filter(
+            user=user, quiz_id=self.kwargs['quiz_id']).first()
+        if not quiz_taken:
+            return Response({"Status": "Please attempt the quiz to see results"})
+        time_difference = (
+            datetime.now() - quiz_taken.start_time.replace(tzinfo=None)).total_seconds()
+        if time_difference < quiz_taken.quiz.timer and len(user_answers) < len(quiz_questions):
             return Response({"Status": "Please attempt the whole quiz to see the results"})
         total_score = 0
         user_score = 0
         for question in quiz_questions:
             total_score += question.ques_score
-        for i in range(len(user_answers)):
-            if user_answers[i].question.ques_type == "FIB":
-                if user_answers[i].text.lower() == models.Answer.objects.filter(question_id=user_answers[i].question).first().solutions.lower():
-                    user_score += models.Question.objects.filter(
-                        id=user_answers[i].question.id).first().ques_score
-            elif user_answers[i].choice.is_correct:
-                user_score += answers[i].question.ques_score
-        quiz_name = models.QuizModel.objects.filter(id=quiz_id).first()
+            user_answer = models.UserAnswer.objects.filter(
+                user=user, question=question).first()
+            if not user_answer:
+                user_answer = models.UserAnswer.objects.create(
+                    user=user, question=question)
+                if question.ques_type == question.FIB:
+                    user_answer.text = ""
+                else:
+                    user_answer.choice = None
+                user_answer.save()
+            else:
+                if question.ques_type == question.FIB:
+                    if user_answer.text == models.Answer.objects.filter(question=user_answer.question).first().solutions.lower():
+                        user_score += models.Question.objects.filter(
+                            id=user_answer.question.id).first().ques_score
+                else:
+                    if user_answer.choice and user_answer.choice.is_correct:
+                        user_score += user_answer.question.ques_score
+        user_answers = models.UserAnswer.objects.all().filter(
+            user_id=user, question__quiz=quiz_id)
+        serialized_quiz_questions = serializers.QuestionSerializer(
+            quiz_questions, many=True)
+        serialized_user_answers = serializers.UserAnswerSerializer(
+            user_answers, many=True)
+        serialized_answers = serializers.AnswerSerializer(answers, many=True)
+        json_quiz_questions = JSONRenderer().render(serialized_quiz_questions.data)
+        json_user_answers = JSONRenderer().render(serialized_user_answers.data)
+        json_answers = JSONRenderer().render(serialized_answers.data)
         return Response({
             "Message": "Thanks for attempting the Quiz",
-            "Quiz Name": quiz_name.quiz_name,
+            "Quiz Name": quiz_taken.quiz.quiz_name,
+            "Questions": json_quiz_questions,
+            "Answers": json_answers,
+            "Your Answers": json_user_answers,
             "Your Score": user_score,
-            "Total Score": total_score
+            "Total Score": total_score,
         })
