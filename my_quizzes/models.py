@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 from users.models import CustomUser
@@ -11,6 +12,7 @@ class QuizModel(models.Model):
     The Idea is to have 2 quizzes only in the beginning (Technical/Fantasy Movie)
     NOTE:- We will use Auto incremented Django Field ID as primary key, so need not to add.
     """
+    id = models.UUIDField(primary_key=True,default = uuid.uuid4)
     quiz_name = models.CharField(unique=True, max_length=20)
     timer = models.IntegerField("Timer")
 
@@ -31,6 +33,7 @@ class Question(models.Model):
         (MCQ, "Multiple Choice"),(FIB, "Fill Ups")
     ]
     
+    id = models.UUIDField(primary_key=True,default = uuid.uuid4)
     ques_text = models.CharField("Question", max_length=40)
     ques_score = models.SmallIntegerField("Marks")
     ques_type = models.CharField("Type", choices=question_types, max_length=3)
@@ -45,6 +48,8 @@ class Answer(models.Model):
     This model deals with the answers of all the questions
     It includes all the choices for MCQ with additional parameter to specify the right one
     """
+
+    id = models.UUIDField(primary_key=True,default = uuid.uuid4)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     solutions = models.CharField("Solution", max_length=50)
     is_correct = models.BooleanField("Correct", null=True)
@@ -57,6 +62,8 @@ class UserAnswer(models.Model):
     """
     This model deals with the answers submitted by the user
     """
+
+    id = models.UUIDField(primary_key=True,default = uuid.uuid4)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.CharField(
@@ -69,6 +76,8 @@ class QuizTaken(models.Model):
     """
     This model helps in keeping a tab of the time taken by each user per quiz
     """
+
+    id = models.UUIDField(primary_key=True,default = uuid.uuid4)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     quiz = models.ForeignKey(QuizModel, on_delete=models.CASCADE)
     start_time = models.DateTimeField("Start Time", null=True)
