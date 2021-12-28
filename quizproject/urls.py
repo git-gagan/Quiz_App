@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include('users.urls')),
     path("quizzes/", include('my_quizzes.urls')),
-    path("api/", include('api.urls')),          # Path for API access
+    path("api/", include('api.urls')),          # Path for API endpoints
+    path("api-quizzes/", include('api_frontend.urls'))
 ]
