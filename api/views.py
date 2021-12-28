@@ -30,7 +30,7 @@ class ApiHome(APIView):
 
 class RegisterView(APIView):
     """
-    Creates the User
+    Creates the User after validating all the credentials and generates the token
     """
 
     def post(self, request):
@@ -51,6 +51,10 @@ class LoginView(APIView):
 
     def post(self, request):
         user_data = self.request.data
+        if "username" not in user_data or "email" not in user_data or "password" not in user_data:
+            return Response({
+                "Status": "Please check if you have provided username, email, password"
+            })
         user_object = CustomUser.objects.filter(
             username=user_data["username"], email=user_data["email"]).first()
         if user_object:
@@ -184,10 +188,14 @@ class QuestionListView(APIView):
             return Response({"Status": "Please Attempt the Quiz First!"})
         if (datetime.now()-quiz_taken.start_time.replace(tzinfo=None)).total_seconds() > quiz_taken.quiz.timer:
             return Response({"Status": "Time's UP!"})
-        if models.UserAnswer.objects.filter(user=user, question_id=request.data["question"]):
-            return Response({"Status": "Already Attempted"})
         serializer = serializers.UserAnswerSerializer(data=request.data)
         if serializer.is_valid():
+            if "choice" not in request.data and "text" not in request.data:
+                return Response({
+                    "Status": "Please provide one of choice or text depending upon question type"
+                })
+            if models.UserAnswer.objects.filter(user=user, question_id=request.data["question"]):
+                return Response({"Status": "Already Attempted"})
             serializer.save(user=user)
             return Response({"Status": "Success"})
         return Response({"Status": "Failure", "error": serializer.errors})

@@ -1,6 +1,5 @@
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
-from django.http.response import JsonResponse
 from rest_framework import serializers
 from my_quizzes import models
 from users.models import CustomUser
@@ -18,14 +17,16 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'password', 'password2')
 
     def create(self, validated_data):
+        password2 = validated_data.pop("password2")
+        user = CustomUser(**validated_data)
         try:
-            password_validation.validate_password(validated_data["password"])
-        except:
-            raise serializers.ValidationError
-        if validated_data["password"] != validated_data["password2"]:
+            password_validation.validate_password(
+                validated_data["password"], user=user)
+        except ValidationError as error:
+            raise serializers.ValidationError(str(error))
+        if validated_data["password"] != password2:
             raise serializers.ValidationError({"Error": "Password Mismatch"})
-        user = CustomUser.objects.create_user(validated_data["username"], validated_data["email"],
-                                              validated_data["password"])
+        user.save()
         return user
 
 

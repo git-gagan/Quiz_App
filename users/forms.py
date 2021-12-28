@@ -9,7 +9,7 @@ from .models import CustomUser
 # Defining the form and the attributes to display in the form
 
 # Workaround to make email mandatory without creating CustomUser
-CustomUser._meta.get_field('email')._unique = True
+# CustomUser._meta.get_field('email')._unique = True
 
 
 class MyUserForm(UserCreationForm):
