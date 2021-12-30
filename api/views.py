@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
 
 from rest_framework import generics
@@ -63,11 +63,10 @@ class LoginView(APIView):
             if user_credentials:
                 token = Token.objects.get_or_create(user=user_object)[0].key
                 if user_object.is_verified:
-                    login(self.request, user_object)
                     json = {"status": "Logged In", "token": token}
                     return Response(json)
                 return Response({"status": "Can't login before OTP verification", "token": token})
-        return Response("Error Logging In")
+        return Response({"status":"Error Logging In"})
 
 
 class LogoutView(APIView):
@@ -125,10 +124,10 @@ class QuizListView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         user = get_user(request)
         if not user:
-            return Response({"Status": "Cannot Authorize"})
+            return Response({"status": "Cannot Authorize"})
         if user.is_authenticated and user.is_verified:
             return self.list(request, *args, **kwargs)
-        return JsonResponse({"Status": "Unauthorized user. ACCESS denied!"})
+        return JsonResponse({"status": "Unverified user. ACCESS denied!"})
 
 
 class QuestionListView(APIView):

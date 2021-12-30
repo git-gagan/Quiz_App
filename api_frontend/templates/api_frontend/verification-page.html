@@ -1,0 +1,16 @@
+{% extends 'Base.html' %}
+
+{% block content %}
+<div class="container">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="otp">OTP</label>
+            <input type="text" class="form-control" id="otp" aria-describedby="otpHelp" placeholder="Enter OTP" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Verify</button>
+        <button type="submit" class="btn btn-primary resendotp">Resend OTP</button>
+        <small>Check your mail for the otp</small>
+    </form>
+</div>
+{% endblock %}

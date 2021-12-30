@@ -1,0 +1,42 @@
+{% extends 'Base.html' %}
+
+{% block content %}
+    <center>
+        <div id="quiz-list">
+        </div>
+    </center>
+    <script>
+        url = "/api/quizzes/"
+        try{
+            auth_token = document.cookie.split(";")[1].split("=")[1]
+        }
+        catch{
+            auth_token = ""
+        }
+        fetch(url)
+        .then(response => response.json())
+        .then((data) => {
+            h2 = document.createElement("h2")
+            if("status" in data){
+                h2.innerHTML = data.status
+            }
+            else{
+                h2.innerHTML = "Here are the available Quizzes"
+                for(let i=0; i<data.length; i++){
+                    b = document.createElement("button")
+                    a = document.createElement("a")
+                    a.href = '#'
+                    b.style.padding = "1rem"
+                    a.name = data[i].id
+                    a.id = i
+                    document.getElementById("quiz-list").appendChild(a)
+                    b.innerHTML = data[i].quiz_name
+                    b.style.width = "50%"
+                    b.style.margin = "2rem"
+                    document.getElementById(i).appendChild(b)
+                }
+            }
+            document.getElementById("quiz-list").prepend(h2)
+        })
+    </script>
+{% endblock %}

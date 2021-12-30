@@ -1,0 +1,30 @@
+{% extends 'Base.html' %}
+
+{% block content %}
+    <h1>Quizzer App through API</h1>
+    <div id="fetched-data"></div>
+    <div id="buttons">
+        <a href="{% url 'api-registration' %}"><button>Register</button></a>
+        <a href="{% url 'api-loginuser' %}"><button>Login</button></a>
+    </div>
+    <script>
+        url = "/api/"
+        buttons = document.getElementById("buttons")
+        buttons.style.display = "none"
+        fetch(url)
+            .then(response => response.json())
+            .then((data)=>{
+                parentDiv = document.getElementById("fetched-data")
+                h3 = document.createElement("h3")
+                h4 = document.createElement("h4")
+                h3.innerHTML = data.Message
+                h4.innerHTML = data.Status
+                parentDiv.appendChild(h3)
+                parentDiv.appendChild(h4)
+                buttons.style.display = "block"
+            })
+            .catch(()=>{
+                document.write("Error Fetching from the API")
+            })
+    </script>
+{% endblock %}
