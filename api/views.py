@@ -78,12 +78,12 @@ class LogoutView(APIView):
     def get(self, request):
         user = get_user(request)
         if not user:
-            return Response({"Status": "Cannot Authorize"})
+            return Response({"status": "Cannot Authorize"})
         if user.is_authenticated and user.is_verified:
             user.auth_token.delete()
             logout(self.request)
-            return Response({"Status": "Succesfully Logged Out!"})
-        return Response({"Status": "Login First"})
+            return Response({"status": "Succesfully Logged Out!"})
+        return Response({"status": "Login First"})
 
 
 class VerificationView(APIView):

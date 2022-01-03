@@ -1,11 +1,24 @@
 {% extends 'Base.html' %}
 
 {% block content %}
+    <style>
+        #logout{
+            border-radius: 0.5rem;
+            border: 1px dodgerblue groove;
+            padding: 0.5rem;
+            width: 25%;
+            margin-top: 2rem;
+            background-color: snow;
+        }
+    </style>
     <center>
         <div id="quiz-list">
         </div>
+        <button id="logout" onclick="logout(event)">Log Out</button>
     </center>
     <script>
+        logoutButton = document.getElementById("logout")
+        logoutButton.style.display = "none"
         url = "/api/quizzes/"
         try{
             auth_token = document.cookie.split(";")[1].split("=")[1]
@@ -29,14 +42,24 @@
                     b.style.padding = "1rem"
                     a.name = data[i].id
                     a.id = i
-                    document.getElementById("quiz-list").appendChild(a)
+                    document.getElementById("quiz-list").prepend(a)
                     b.innerHTML = data[i].quiz_name
                     b.style.width = "50%"
                     b.style.margin = "2rem"
                     document.getElementById(i).appendChild(b)
                 }
+                logoutButton.style.display = "block"
             }
             document.getElementById("quiz-list").prepend(h2)
         })
+        function logout(event){
+            event.preventDefault()
+            fetch("/api/logout/")
+            .then(response => response.json())
+            .then((data) => {
+                alert(data.status)
+                window.location.replace("/api-quizzes/api-login/")
+            })
+        }
     </script>
 {% endblock %}
