@@ -26,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(str(error))
         if validated_data["password"] != password2:
             raise serializers.ValidationError({"Error": "Password Mismatch"})
+        user.set_password(validated_data['password'])
         user.save()
         return user
 

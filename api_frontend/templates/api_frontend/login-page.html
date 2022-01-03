@@ -24,6 +24,8 @@
     </form>
 </div>
 <script>
+  h3 = document.createElement("h3")
+  h3.innerHTML = ""
   function login(event){
     event.preventDefault()
     url = "/api/login/"
@@ -42,6 +44,7 @@
       }})
       .then(response => response.json())
       .then((json) => {
+        console.log(json)
         if("token" in json){
           document.cookie = `token=${json.token};path=/`;
           if(json.status === "Logged In"){
@@ -52,7 +55,6 @@
           }          
         }
         else{
-          h3 = document.createElement("h3")
           h3.innerHTML = json.status
           h3.style.backgroundColor = "red"
           h3.style.margin = "1rem"

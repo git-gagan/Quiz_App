@@ -3,8 +3,8 @@
 {% block content %}
 <div class="container">
     <h2>Register</h2>
-    <form method="POST">
-        {% csrf_token %}
+    <form>
+        <p id="errors"></p>
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control" id="username" aria-describedby="UsernameHelp" placeholder="Enter Username" required>
@@ -22,10 +22,53 @@
             <label for="password2">Confirm Password</label>
             <input type="password" class="form-control" id="password2" placeholder="Password" required>
         </div>
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary" onclick="register(event)">Register</button>
         <small>
             Already have an account? <a href="{% url 'api-loginuser' %}">Login</a>
         </small>
     </form>
 </div>
+<script>
+    errors = document.getElementById("errors")
+    errors.style.display = "none"
+    function register(event){
+        errors.innerHTML = ""
+        event.preventDefault()
+        url = "/api/register/"
+        var name = document.getElementById('username').value;
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value
+        var password2 = document.getElementById('password2').value
+        fetch(url, {
+            method: "post",
+            body: JSON.stringify({
+                username: name,
+                email: email,
+                password: password,
+                password2: password2
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }})
+        .then(response => response.json())
+        .then((json) => {
+            if(json.status == "Registered"){
+                alert("Registered Successfully")
+                window.location.replace("http://127.0.0.1:8000/api-quizzes/api-login/")
+            }
+            else{
+                alert("Registration Failed")
+                for(var error in json){
+                    p = document.createElement("p")
+                    p.innerHTML = `${error} : ${json[error]}`
+                    errors.appendChild(p)
+                }
+                errors.style.display = "block"
+                errors.style.backgroundColor = "rgb(255,105,97)"
+                errors.style.fontSize = "1rem"
+                errors.style.textAlign = "center"
+            }
+        })
+    }
+</script>
 {% endblock %}

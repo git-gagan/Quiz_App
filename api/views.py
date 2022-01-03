@@ -34,6 +34,7 @@ class RegisterView(APIView):
     """
 
     def post(self, request):
+        print(request.data)
         serializer = serializers.UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -59,7 +60,7 @@ class LoginView(APIView):
             username=user_data["username"], email=user_data["email"]).first()
         if user_object:
             user_credentials = authenticate(
-                request, username=user_data["username"], password=user_data["password"])
+                self.request, username=user_data["username"], password=user_data["password"])
             if user_credentials:
                 token = Token.objects.get_or_create(user=user_object)[0].key
                 if user_object.is_verified:
@@ -93,20 +94,18 @@ class VerificationView(APIView):
     def get(self, request, *args, **kwargs):
         user = get_user(request)
         if not user:
-            return Response({"Status": "Cannot Authorize"})
-        if not user.is_authenticated:
-            return JsonResponse({"Status": "Registration needed"})
+            return Response({"status": "Cannot Authorize"})
         if user.is_authenticated and not user.is_verified:
             otp = user.get_otp()
             mail(user.email, otp)
-            return Response({"status": "Mail Sent!"})
+            return Response({"status": "Mail Sent"})
         else:
-            return JsonResponse({"status": "Verified!"})
+            return Response({"status": "Verified"})
 
     def post(self, request, *args, **kwargs):
         user = get_user(request)
         if user == None or "otp" not in request.data:
-            return JsonResponse({"Status": "Invalid POST request!"})
+            return JsonResponse({"status": "Invalid POST request!"})
         user_otp = request.data["otp"]
         if user.verify_otp(user_otp):
             return Response({"status": "Successfully Verified!"})
