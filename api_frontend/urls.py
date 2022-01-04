@@ -8,5 +8,5 @@ urlpatterns =[
     path("api-registration/", ApiRegistrationView.as_view(), name="api-registration"),
     path("api-verification/", ApiVerificationView.as_view(), name="api-verification"),
     path("quiz/", ApiQuizzesView.as_view(), name="quizzes"),
-    #path("quiz/<uuid:quiz_id>/", )
+    path("quiz/<uuid:quiz_id>/", ApiQuestionsView.as_view(), name="api-question")
 ]

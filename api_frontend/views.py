@@ -32,3 +32,9 @@ class ApiQuizzesView(TemplateView):
     Class based view to display all the available quizzes with an option to attempt them
     """
     template_name = "api_frontend/quizzes-page.html"
+
+class ApiQuestionsView(TemplateView):
+    """
+    The view renders one question per page depending upon the user/quiz/time
+    """
+    template_name = "api_frontend/question-page.html"

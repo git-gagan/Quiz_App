@@ -34,13 +34,15 @@
                 h2.innerHTML = data.status
             }
             else{
+                console.log(data)
                 h2.innerHTML = "Here are the available Quizzes"
                 for(let i=0; i<data.length; i++){
                     b = document.createElement("button")
                     a = document.createElement("a")
-                    a.href = '#'
+                    a.href = `/api-quizzes/quiz/${data[i].id}/`
                     b.style.padding = "1rem"
-                    a.name = data[i].id
+                    a.name = data[i].quiz_name
+                    localStorage.setItem(data[i].id, data[i].quiz_name)
                     a.id = i
                     document.getElementById("quiz-list").prepend(a)
                     b.innerHTML = data[i].quiz_name

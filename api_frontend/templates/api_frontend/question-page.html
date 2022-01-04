@@ -1,0 +1,85 @@
+{% extends 'Base.html' %}
+
+{% block content %}
+    <style>
+        #question-data{
+            border: dodgerblue 1px groove;
+            padding: 1rem;
+            margin: auto;
+            width: 50%;
+            margin-top: 1rem;
+            display: none;
+        }
+        #timer{
+            text-align: center;
+            margin-top: 2rem;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-size: xx-large;
+        }
+    </style>
+    <center><h2 id="quiz-name"></h2></center>
+    <div id="question-data">
+        <h5 id="question"></h5>
+        <p id="solution">
+        </p>
+        <button type="submit" onclick="submit(event)">Submit</button>
+    </div>
+    <h3 id="timer"></h3>
+    <script>
+        quiz_id = window.location.href.split("/")[5]
+        url = `/api/quizzes/${quiz_id}/`
+        fetch(url)
+        .then(response => response.json())
+        .then((data)=>{
+            console.log(data)
+            if("status" in data){
+                alert(data.status)
+                window.location.replace("/api-quizzes/api-login/")
+            }
+            else{
+                timer = document.getElementById("timer")
+                t = `${data["Time-Left"]}` 
+                var id = setInterval(timing, 1000)
+                function timing(){
+                    t -= 1
+                    timer.innerHTML = "<b>Timer: " +t+" seconds</b>"
+                    if(t <= 0){
+                        timer.innerHTML = "<b>Time's Up!</b>"
+                        clearInterval(id);
+                        location.reload()
+                    }
+                }
+                document.getElementById("question-data").style.display = "block"
+                document.getElementById("question").innerHTML = data.Question.ques_text
+                document.getElementById("quiz-name").innerHTML = localStorage.getItem(quiz_id)
+                p = document.getElementById("solution")
+                if(data.Question.ques_type == "FIB"){
+                    inp = document.createElement("input")
+                    inp.type = "text"
+                    inp.required = true
+                    p.appendChild(inp)
+                }
+                else{
+                    for(let option in data.Options){
+                        inp = document.createElement("input")
+                        inp.type = "radio"
+                        inp.name = data.Question.id
+                        inp.id = data.Options[option].solutions
+                        label = document.createElement("label")
+                        label.htmlFor = data.Options[option].solutions
+                        label.innerHTML = data.Options[option].solutions
+                        inp.required = true
+                        p.appendChild(inp)
+                        p.appendChild(label)
+                        p.appendChild(document.createElement("br"))
+                    }
+                }
+            }
+        })
+        function submit(event){
+            event.preventDefault();
+            console.log("Submitted!")
+            location.reload()
+        }
+    </script>
+{% endblock %}

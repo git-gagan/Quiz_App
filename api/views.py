@@ -138,12 +138,12 @@ class QuestionListView(APIView):
     def get(self, request, *args, **kwargs):
         user = get_user(request)
         if not user:
-            return Response({"Status": "Cannot Authorize"})
+            return Response({"status": "Cannot Authorize"})
         if not user.is_verified:
-            return JsonResponse({"Status": "Unauthorized user. ACCESS denied!"})
+            return JsonResponse({"status": "Unauthorized user. ACCESS denied!"})
         quiz_id = self.kwargs["quiz_id"]
         if not models.QuizModel.objects.filter(id=quiz_id):
-            return JsonResponse({"Status": "The Quiz with this ID doesn't exist"})
+            return JsonResponse({"status": "The Quiz with this ID doesn't exist"})
         this_quiz = models.QuizModel.objects.all().filter(id=quiz_id).first()
         quiz_questions = models.Question.objects.all().filter(quiz_id=quiz_id)
         current_question_number = 1
@@ -172,7 +172,7 @@ class QuestionListView(APIView):
             if mcq:
                 return Response({"Question": serialized_obj.data, "Options": serialized_choices.data, "Time-Left": time_remaining})
             return Response({"Question": serialized_obj.data, "Time-Left": time_remaining})
-        return Response({"Status": "Quiz Completed!"})
+        return Response({"status": "Quiz Completed!"})
 
     def post(self, request, *args, **kwargs):
         user = get_user(request)
