@@ -162,7 +162,7 @@ class QuestionListView(APIView):
                 datetime.now()-quiz_taken.start_time.replace(tzinfo=None)).total_seconds()
             time_remaining = round((this_quiz.timer) - time_used)
             if time_used >= this_quiz.timer:
-                return Response({"Status": "Time's UP!"})
+                return Response({"status": "Time's UP!"})
             serialized_obj = serializers.QuestionSerializer(question)
             if question.ques_type == question.MCQ:
                 mcq = True
@@ -177,26 +177,26 @@ class QuestionListView(APIView):
     def post(self, request, *args, **kwargs):
         user = get_user(request)
         if not user:
-            return JsonResponse({"Status": "Cannot Authorize"})
+            return JsonResponse({"status": "Cannot Authorize"})
         if not user.is_verified:
-            return JsonResponse({"Status": "Unauthorized user. ACCESS denied!"})
+            return JsonResponse({"status": "Unauthorized user. ACCESS denied!"})
         quiz_taken = models.QuizTaken.objects.filter(
             user=user, quiz=self.kwargs["quiz_id"]).first()
         if not quiz_taken:
-            return Response({"Status": "Please Attempt the Quiz First!"})
+            return Response({"status": "Please Attempt the Quiz First!"})
         if (datetime.now()-quiz_taken.start_time.replace(tzinfo=None)).total_seconds() > quiz_taken.quiz.timer:
-            return Response({"Status": "Time's UP!"})
+            return Response({"status": "Time's UP!"})
         serializer = serializers.UserAnswerSerializer(data=request.data)
         if serializer.is_valid():
             if "choice" not in request.data and "text" not in request.data:
                 return Response({
-                    "Status": "Please provide one of choice or text depending upon question type"
+                    "status": "Please provide one of choice or text depending upon question type"
                 })
             if models.UserAnswer.objects.filter(user=user, question_id=request.data["question"]):
-                return Response({"Status": "Already Attempted"})
+                return Response({"status": "Already Attempted"})
             serializer.save(user=user)
-            return Response({"Status": "Success"})
-        return Response({"Status": "Failure", "error": serializer.errors})
+            return Response({"status": "Success"})
+        return Response({"status": "Failure", "error": serializer.errors})
 
 
 class ResultView(APIView):

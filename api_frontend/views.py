@@ -38,3 +38,9 @@ class ApiQuestionsView(TemplateView):
     The view renders one question per page depending upon the user/quiz/time
     """
     template_name = "api_frontend/question-page.html"
+
+class ApiResultView(TemplateView):
+    """
+    The view renders one question per page depending upon the user/quiz/time
+    """
+    template_name = "api_frontend/result-page.html"

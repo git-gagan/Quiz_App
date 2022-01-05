@@ -19,13 +19,17 @@
     </style>
     <center><h2 id="quiz-name"></h2></center>
     <div id="question-data">
-        <h5 id="question"></h5>
-        <p id="solution">
-        </p>
-        <button type="submit" onclick="submit(event)">Submit</button>
+        <form>
+            <h5 id="question"></h5><span id="type"></span>
+            <br/>
+            <p id="solution">
+            </p>
+            <button type="submit" onclick="send(event)">Submit</button>
+        </form>
     </div>
     <h3 id="timer"></h3>
     <script>
+        question = document.getElementById("question")
         quiz_id = window.location.href.split("/")[5]
         url = `/api/quizzes/${quiz_id}/`
         fetch(url)
@@ -34,7 +38,12 @@
             console.log(data)
             if("status" in data){
                 alert(data.status)
-                window.location.replace("/api-quizzes/api-login/")
+                if(data["status"] == "Quiz Completed!" || data["status"] == "Time's UP!"){
+                    window.location.replace("result/")
+                }
+                else{
+                    window.location.replace("/api-quizzes/api-login/")
+                }
             }
             else{
                 timer = document.getElementById("timer")
@@ -50,7 +59,10 @@
                     }
                 }
                 document.getElementById("question-data").style.display = "block"
-                document.getElementById("question").innerHTML = data.Question.ques_text
+                question.innerHTML = data.Question.ques_text
+                question.style.display = "inline"
+                question.name = `${data.Question.id}`
+                document.getElementById("type").innerHTML = `(${data.Question.ques_type})`
                 document.getElementById("quiz-name").innerHTML = localStorage.getItem(quiz_id)
                 p = document.getElementById("solution")
                 if(data.Question.ques_type == "FIB"){
@@ -64,9 +76,9 @@
                         inp = document.createElement("input")
                         inp.type = "radio"
                         inp.name = data.Question.id
-                        inp.id = data.Options[option].solutions
+                        inp.id = data.Options[option].id
                         label = document.createElement("label")
-                        label.htmlFor = data.Options[option].solutions
+                        label.htmlFor = data.Options[option].id
                         label.innerHTML = data.Options[option].solutions
                         inp.required = true
                         p.appendChild(inp)
@@ -76,9 +88,39 @@
                 }
             }
         })
-        function submit(event){
+        function send(event){
+            question = document.getElementById("question").name
+            text = null
+            choice = null
             event.preventDefault();
-            console.log("Submitted!")
+            ques_type = document.getElementById("type").innerHTML
+            if(ques_type == "(FIB)"){
+                text = document.getElementsByTagName("input")[0].value
+            }
+            else{
+                choices = document.getElementsByTagName("input")
+                for(let choice in choices){
+                    console.log(choices[choice])
+                    if(choices[choice].checked){
+                        choice = choices[choice].id
+                        break
+                    }
+                }
+            }
+            fetch(url, {
+            method: "post",
+            body: JSON.stringify({
+                "question": question,
+                "text": text,
+                "choice": choice
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }})
+            .then(response => response.json())
+            .then((json) => {
+                console.log(json)
+            })
             location.reload()
         }
     </script>
