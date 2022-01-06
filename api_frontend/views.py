@@ -1,4 +1,6 @@
+from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
+from django.views.decorators.cache import never_cache
 
 
 class ApiHomeView(TemplateView):
@@ -21,24 +23,31 @@ class ApiLoginView(TemplateView):
     """
     template_name = "api_frontend/login-page.html"
 
+
 class ApiVerificationView(TemplateView):
     """
     Class based view to deal with OTP verification
     """
     template_name = "api_frontend/verification-page.html"
 
+
+@method_decorator(never_cache, name='dispatch')
 class ApiQuizzesView(TemplateView):
     """
     Class based view to display all the available quizzes with an option to attempt them
     """
     template_name = "api_frontend/quizzes-page.html"
 
+
+@method_decorator(never_cache, name='dispatch')
 class ApiQuestionsView(TemplateView):
     """
     The view renders one question per page depending upon the user/quiz/time
     """
     template_name = "api_frontend/question-page.html"
 
+
+@method_decorator(never_cache, name='dispatch')
 class ApiResultView(TemplateView):
     """
     The view renders one question per page depending upon the user/quiz/time

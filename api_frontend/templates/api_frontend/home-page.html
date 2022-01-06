@@ -11,6 +11,7 @@
         url = "/api/"
         buttons = document.getElementById("buttons")
         buttons.style.display = "none"
+        document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`
         fetch(url)
             .then(response => response.json())
             .then((data)=>{

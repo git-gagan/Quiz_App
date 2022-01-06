@@ -31,7 +31,8 @@
         .then((data) => {
             h2 = document.createElement("h2")
             if("status" in data){
-                h2.innerHTML = data.status
+                alert(data.status)
+                window.location.replace("/api-quizzes/api-login/")
             }
             else{
                 h2.innerHTML = "Here are the available Quizzes"

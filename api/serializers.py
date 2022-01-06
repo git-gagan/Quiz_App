@@ -42,7 +42,7 @@ class QuestionSerializer(serializers.ModelSerializer):
     "Class dealing with serialization of Questions one at a time"
     class Meta:
         model = models.Question
-        fields = ('id', 'ques_text', 'ques_type',)
+        fields = ('id', 'ques_text', 'ques_type', 'ques_score')
 
 
 class AnswerSerializer(serializers.ModelSerializer):

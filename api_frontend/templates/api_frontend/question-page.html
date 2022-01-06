@@ -89,23 +89,27 @@
             }
         })
         function send(event){
+            event.preventDefault()
             question = document.getElementById("question").name
-            text = null
-            choice = null
-            event.preventDefault();
+            var text = ""
+            var choice = null
             ques_type = document.getElementById("type").innerHTML
             if(ques_type == "(FIB)"){
                 text = document.getElementsByTagName("input")[0].value
             }
             else{
                 choices = document.getElementsByTagName("input")
-                for(let choice in choices){
-                    console.log(choices[choice])
-                    if(choices[choice].checked){
-                        choice = choices[choice].id
+                for(let my_choice in choices){
+                    if(choices[my_choice].checked){
+                        choice = choices[my_choice].id
+                        text = document.getElementsByTagName("label")[my_choice].innerHTML
                         break
                     }
                 }
+            }
+            if(text == ""){
+                alert("Please select an answer")
+                return
             }
             fetch(url, {
             method: "post",
@@ -117,10 +121,7 @@
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }})
-            .then(response => response.json())
-            .then((json) => {
-                console.log(json)
-            })
+            .then(alert("Answer Submitted"))
             location.reload()
         }
     </script>

@@ -34,7 +34,6 @@ class RegisterView(APIView):
     """
 
     def post(self, request):
-        print(request.data)
         serializer = serializers.UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -67,7 +66,7 @@ class LoginView(APIView):
                     json = {"status": "Logged In", "token": token}
                     return Response(json)
                 return Response({"status": "Can't login before OTP verification", "token": token})
-        return Response({"status":"Error Logging In"})
+        return Response({"status": "Error Logging In"})
 
 
 class LogoutView(APIView):
@@ -206,12 +205,12 @@ class ResultView(APIView):
 
     def get(self, request, *args, **kwargs):
         if not models.QuizModel.objects.all().filter(id=self.kwargs['quiz_id']):
-            return Response({"Status": "The Quiz with this ID doesn't exist!!"})
+            return Response({"status": "The Quiz with this ID doesn't exist!!"})
         user = get_user(request)
         if not user:
-            return JsonResponse({"Status": "Cannot Authorize"})
+            return JsonResponse({"status": "Cannot Authorize"})
         if not user.is_verified:
-            return JsonResponse({"Status": "Unauthorized user. ACCESS denied!"})
+            return JsonResponse({"status": "Unauthorized user. ACCESS denied!"})
         quiz_id = self.kwargs['quiz_id']
         quiz_questions = models.Question.objects.all().filter(quiz_id=quiz_id)
         user_answers = models.UserAnswer.objects.all().filter(
@@ -221,11 +220,11 @@ class ResultView(APIView):
         quiz_taken = models.QuizTaken.objects.filter(
             user=user, quiz_id=self.kwargs['quiz_id']).first()
         if not quiz_taken:
-            return Response({"Status": "Please attempt the quiz to see results"})
+            return Response({"status": "Please attempt the quiz to see results"})
         time_difference = (
             datetime.now() - quiz_taken.start_time.replace(tzinfo=None)).total_seconds()
         if time_difference < quiz_taken.quiz.timer and len(user_answers) < len(quiz_questions):
-            return Response({"Status": "Please attempt the whole quiz to see the results"})
+            return Response({"status": "Please attempt the whole quiz to see the results"})
         total_score = 0
         user_score = 0
         for question in quiz_questions:
@@ -235,9 +234,8 @@ class ResultView(APIView):
             if not user_answer:
                 user_answer = models.UserAnswer.objects.create(
                     user=user, question=question)
-                if question.ques_type == question.FIB:
-                    user_answer.text = ""
-                else:
+                user_answer.text = ""
+                if question.ques_type != question.FIB:
                     user_answer.choice = None
                 user_answer.save()
             else:
@@ -257,10 +255,10 @@ class ResultView(APIView):
         serialized_answers = serializers.AnswerSerializer(answers, many=True)
         return Response({
             "Message": "Thanks for attempting the Quiz",
-            "Quiz Name": quiz_taken.quiz.quiz_name,
+            "Quiz_Name": quiz_taken.quiz.quiz_name,
             "Questions": serialized_quiz_questions.data,
             "Answers": serialized_answers.data,
-            "Your Answers": serialized_user_answers.data,
-            "Your Score": user_score,
-            "Total Score": total_score,
+            "Your_Answers": serialized_user_answers.data,
+            "Your_Score": user_score,
+            "Total_Score": total_score,
         })

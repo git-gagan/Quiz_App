@@ -1,5 +1,84 @@
 {% extends 'Base.html' %}
 
 {% block content %}
-    Results here
+    <style>
+        .container{
+            display: none;
+        }
+        body{
+            background-color: rgb(209, 228, 228)
+        }
+        .correct_answer{
+            background-color: lightgreen;
+        }
+        #data{
+            border: 1px solid black;
+            border-radius: 0.5rem;
+            padding: 1rem 0.5rem
+        }
+        button{
+            padding:0.5rem;
+            margin-top: 0.5rem;
+            width:30%;
+            background-color: whitesmoke;
+            border: 1px groove dodgerblue;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+    <div class="container">
+        <center>
+            <h2>Results</h2>
+            <i><h3 id="message"></h3></i>
+        </center>
+        <h4>Here is your scorecard:-</h4>
+        <h5 id="quiz-detail"></h5>
+        <div id="data">
+        </div>
+        <center><a href="{% url 'quizzes' %}"><button>Home</button></a></center>
+    </div>
+    <footer>
+        <small>Regards:- Gagan</small> 
+    </footer>
+    <script>
+        quiz_id = window.location.href.split("/")[5]
+        url = `/api/quizzes/${quiz_id}/result/`
+        fetch(url)
+        .then(response => response.json())
+        .then((json) => {
+            if("status" in json){
+                alert(json.status)
+                if(json.status == "Please attempt the quiz to see results" ||
+                json.status == "Please attempt the whole quiz to see the results"){
+                    window.location.replace("/api-quizzes/quiz/")
+                }
+                else{
+                    window.location.replace("/api-quizzes/api-login/")
+                }
+            }
+            else{
+                document.getElementsByClassName("container")[0].style.display = "block"
+                h3 = document.getElementById("message")
+                h3.innerHTML = json.Message
+                h4 = document.getElementById("quiz-detail")
+                h4.innerHTML = `Quiz Number :- ${quiz_id} <br/>Quiz Name :- ${json.Quiz_Name}`
+                div = document.getElementById("data")
+                for(var question in json.Questions){
+                    this_question = document.createElement("h6")
+                    this_question.innerHTML = `Question: ${json.Questions[question].ques_text} (${json.Questions[question].ques_score})`
+                    correct_answer = document.createElement("p")
+                    correct_answer.innerHTML = `Correct Answer :- <b>${json.Answers[question].solutions}</b>`
+                    correct_answer.classList.add("correct_answer")
+                    your_answer = document.createElement("p")
+                    your_answer.innerHTML = `Your Answer :- <b>${json.Your_Answers[question].text}</b>`
+                    div.appendChild(this_question)
+                    div.appendChild(correct_answer)
+                    div.appendChild(your_answer)
+                }
+                score_tag = document.createElement("h3")
+                score_tag.innerHTML = `Your Score is ${json.Your_Score} out of ${json.Total_Score}`
+                div.appendChild(score_tag)
+            }})
+    </script>
 {% endblock %}
