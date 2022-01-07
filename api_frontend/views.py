@@ -3,6 +3,7 @@ from django.views.generic.base import TemplateView
 from django.views.decorators.cache import never_cache
 
 
+@method_decorator(never_cache, name='dispatch')
 class ApiHomeView(TemplateView):
     """
     Class based view to display Home Page of API
@@ -10,6 +11,7 @@ class ApiHomeView(TemplateView):
     template_name = "api_frontend/home-page.html"
 
 
+@method_decorator(never_cache, name='dispatch')
 class ApiRegistrationView(TemplateView):
     """
     Class based view to deal with User Sign up and do some minimal validation
@@ -17,6 +19,7 @@ class ApiRegistrationView(TemplateView):
     template_name = "api_frontend/registration-page.html"
 
 
+@method_decorator(never_cache, name='dispatch')
 class ApiLoginView(TemplateView):
     """
     Class based view to deal with User Login 
@@ -24,6 +27,7 @@ class ApiLoginView(TemplateView):
     template_name = "api_frontend/login-page.html"
 
 
+@method_decorator(never_cache, name='dispatch')
 class ApiVerificationView(TemplateView):
     """
     Class based view to deal with OTP verification

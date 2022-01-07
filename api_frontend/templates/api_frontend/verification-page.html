@@ -11,14 +11,28 @@
         <button type="submit" class="btn btn-primary" onclick="verify(event)">Verify</button>
         <small>Check your mail for the otp</small>
     </form><br/>
-    <button type="submit" class="btn btn-primary resendotp" onclick="location.reload()">Resend OTP</button>
+    <button type="submit" class="btn btn-primary resendotp" onclick="resend()">Resend OTP</button>
 </div>
 <script>
+    window.onload = function(){
+        window.addEventListener( "pageshow", function ( event ) {
+            var historyTraversal = event.persisted || 
+                                    ( typeof window.performance != "undefined" && 
+                                        window.performance.navigation.type === 2 );
+            if(historyTraversal){
+                // Handle page restore.
+                alert("Please Login again!")
+                window.location.replace("/api-quizzes/api-login/");
+            }
+            else{
+                resend();
+            }
+    });
+    }
     url = "/api/verification/"
     function verify(event){
         event.preventDefault()
         user_otp = document.getElementById("otp").value
-        console.log(user_otp)
         fetch(url, {
             method: "post",
             body: JSON.stringify({
@@ -38,8 +52,8 @@
             }
         })
     }
-    window.addEventListener('load', function () {
-        fetch(url)
+    function resend() {
+        fetch(url = "/api/verification/")
         .then(response => response.json())
         .then((data) => {
             if(data.status == "Cannot Authorize"){
@@ -52,6 +66,6 @@
                 window.location.replace("http://127.0.0.1:8000/api-quizzes/quiz/")
             }
         })
-    })
+    }
 </script>
 {% endblock %}

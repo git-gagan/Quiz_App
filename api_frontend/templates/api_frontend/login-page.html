@@ -24,7 +24,19 @@
     </form>
 </div>
 <script>
-  document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`
+  window.addEventListener( "pageshow", function ( event ) {
+            var historyTraversal = event.persisted || 
+                                    ( typeof window.performance != "undefined" && 
+                                        window.performance.navigation.type === 2 );
+            if(historyTraversal){
+                // Handle page restore.
+                window.location.reload();
+            }
+        });
+  window.onload = function(){
+      fetch("/api/logout/").then(response => response.json()).then(d=>console.log(d))
+      document.cookie = "token=; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/";
+  }
   h3 = document.createElement("h3")
   h3.innerHTML = ""
   function login(event){
@@ -45,7 +57,6 @@
       }})
       .then(response => response.json())
       .then((json) => {
-        console.log(json)
         if("token" in json){
           document.cookie = `token=${json.token};path=/`;
           if(json.status === "Logged In"){

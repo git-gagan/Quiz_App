@@ -29,6 +29,15 @@
     </div>
     <h3 id="timer"></h3>
     <script>
+        window.addEventListener( "pageshow", function ( event ) {
+            var historyTraversal = event.persisted || 
+                                    ( typeof window.performance != "undefined" && 
+                                        window.performance.navigation.type === 2 );
+            if(historyTraversal){
+                // Handle page restore.
+                window.location.reload();
+            }
+        });
         question = document.getElementById("question")
         quiz_id = window.location.href.split("/")[5]
         url = `/api/quizzes/${quiz_id}/`

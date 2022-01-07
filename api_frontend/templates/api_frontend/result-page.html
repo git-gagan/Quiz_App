@@ -42,6 +42,15 @@
         <small>Regards:- Gagan</small> 
     </footer>
     <script>
+        window.addEventListener( "pageshow", function ( event ) {
+            var historyTraversal = event.persisted || 
+                                    ( typeof window.performance != "undefined" && 
+                                        window.performance.navigation.type === 2 );
+            if(historyTraversal){
+                // Handle page restore.
+                window.location.reload();
+            }
+        });
         quiz_id = window.location.href.split("/")[5]
         url = `/api/quizzes/${quiz_id}/result/`
         fetch(url)

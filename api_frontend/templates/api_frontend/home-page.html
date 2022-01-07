@@ -8,10 +8,22 @@
         <a href="{% url 'api-loginuser' %}"><button>Login</button></a>
     </div>
     <script>
+        window.addEventListener( "pageshow", function ( event ) {
+            var historyTraversal = event.persisted || 
+                                    ( typeof window.performance != "undefined" && 
+                                        window.performance.navigation.type === 2 );
+            if(historyTraversal){
+                // Handle page restore.
+                window.location.reload();
+            }
+        });
+        window.onload = function(){
+            fetch("/api/logout/").then(response => response.json()).then(d=>console.log(d))
+            document.cookie = "token=; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/";
+        }
         url = "/api/"
         buttons = document.getElementById("buttons")
         buttons.style.display = "none"
-        document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`
         fetch(url)
             .then(response => response.json())
             .then((data)=>{
